@@ -65,7 +65,7 @@ func main() {
 		}
 
 		for _, build := range builds {
-			if build.Why == "api" && build.BuildParameters.DeployToQA == "true" {
+			if build.Why == "api" && build.BuildParameters.DeployToQA == "true" && build.Status == "success" {
 				time, err := time.Parse(time.RFC3339, build.StopTime)
 				if err != nil {
 					log.Println(err)
