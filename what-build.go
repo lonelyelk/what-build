@@ -15,11 +15,11 @@ func init() {
 	godotenv.Load()
 }
 
-type BuildParameters struct {
+type buildParameters struct {
 	DeployToQA string `json:"DEPLOY_TO_QA"`
 	QAEnv      string `json:"QA_ENV"`
 }
-type BuildResponse struct {
+type buildResponse struct {
 	BuildNum        int             `json:"build_num"`
 	Branch          string          `json:"branch"`
 	VcsRevision     string          `json:"vcs_revision"`
@@ -29,7 +29,7 @@ type BuildResponse struct {
 	StopTime        string          `json:"stop_time"`
 	BuildTimeMillis int             `json:"build_time_millis"`
 	Status          string          `json:"status"`
-	BuildParameters BuildParameters `json:"build_parameters"`
+	BuildParameters buildParameters `json:"build_parameters"`
 }
 
 const perPage int = 10
@@ -57,7 +57,7 @@ func main() {
 			os.Exit(1)
 		}
 		defer res.Body.Close()
-		builds := make([]BuildResponse, 0)
+		builds := make([]buildResponse, 0)
 		err = json.NewDecoder(res.Body).Decode(&builds)
 		if err != nil {
 			log.Println(err)
