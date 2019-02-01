@@ -47,7 +47,7 @@ func main() {
 		q.Add("circle-token", os.Getenv("CIRCLECI_TOKEN"))
 		q.Add("limit", string(perPage))
 		q.Add("offset", string(offset))
-		q.Add("filter", os.Getenv("completed"))
+		q.Add("filter", "completed")
 		req.Header.Add("Accept", "application/json")
 		req.Header.Add("User-Agent", "lonelyelk-what-build-bot")
 		req.URL.RawQuery = q.Encode()
