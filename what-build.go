@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -103,18 +104,15 @@ func findCIBuild(projName string, buildName string, config *Config) (ciBuild *CI
 		if err != nil {
 			return nil, err
 		}
-
 		res, err := client.Do(req)
 		if err != nil {
 			return nil, err
 		}
 		defer res.Body.Close()
 		ciBuilds := make([]CIBuildResponse, 0)
-
 		if err = json.NewDecoder(res.Body).Decode(&ciBuilds); err != nil {
 			return nil, err
 		}
-
 		for _, cib := range ciBuilds {
 			if cib.BuildParameters == nil {
 				continue
@@ -137,20 +135,28 @@ func findCIBuild(projName string, buildName string, config *Config) (ciBuild *CI
 	return nil, errors.New("Build not found")
 }
 
-func main() {
-	parameterInput := ssm.GetParameterInput{Name: aws.String(os.Getenv("AWS_SSM_NAME_CONFIG"))}
+func getConfig() (config *Config, err error) {
+	paramIn := ssm.GetParameterInput{Name: aws.String(os.Getenv("AWS_SSM_NAME_CONFIG"))}
 	ssmc := ssm.New(session.Must(session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_REGION"))})))
-	param, err := ssmc.GetParameter(&parameterInput)
+	paramOut, err := ssmc.GetParameter(&paramIn)
 	if err != nil {
-		fmt.Println(err)
+		return
 	}
-	var config Config
-	if err = json.Unmarshal([]byte(*param.Parameter.Value), &config); err != nil {
+	config = &Config{}
+	if err = json.NewDecoder(strings.NewReader(*paramOut.Parameter.Value)).Decode(config); err != nil {
+		return nil, err
+	}
+	return
+}
+
+func main() {
+	config, err := getConfig()
+	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	ciBuild, err := findCIBuild("console", "qa3", &config)
+	ciBuild, err := findCIBuild("console", "qa3", config)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -161,5 +167,4 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Printf("Deployed to %s at %v\nCommit: %s\nRevision: %s\n", "qa3", time, ciBuild.Subject, ciBuild.VcsRevision)
-	os.Exit(0)
 }
