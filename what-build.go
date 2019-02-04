@@ -157,7 +157,7 @@ func getConfig() (config *Config, err error) {
 	return
 }
 
-func main() {
+func notMain() {
 	config, err := getConfig()
 	if err != nil {
 		fmt.Println(err)
