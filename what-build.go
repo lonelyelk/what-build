@@ -13,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/joho/godotenv"
 )
@@ -136,8 +137,15 @@ func findCIBuild(projName string, buildName string, config *Config) (ciBuild *CI
 }
 
 func getConfig() (config *Config, err error) {
+	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_REGION"))}))
+	iamc := iam.New(session)
+	userOut, err := iamc.GetUser(&iam.GetUserInput{})
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(userOut)
 	paramIn := ssm.GetParameterInput{Name: aws.String(os.Getenv("AWS_SSM_NAME_CONFIG"))}
-	ssmc := ssm.New(session.Must(session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_REGION"))})))
+	ssmc := ssm.New(session)
 	paramOut, err := ssmc.GetParameter(&paramIn)
 	if err != nil {
 		return
