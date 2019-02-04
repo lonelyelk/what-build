@@ -40,7 +40,7 @@ func init() {
 	viper.SetConfigFile(configPath)
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("No configuration found", err)
+		fmt.Println("No configuration found:", err)
 		if err = promptAndSetConfig("Enter AWS region", "aws_region"); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -59,18 +59,21 @@ func init() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		if err = viper.WriteConfigAs(configPath); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 	if viper.GetString("aws_ssm_configuration") == "" {
 		if err = promptAndSetConfig("Enter path for SSM configuration", "aws_ssm_configuration"); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		if err = viper.WriteConfigAs(configPath); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
-	if err = viper.WriteConfigAs(configPath); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 }
 
 func main() {
