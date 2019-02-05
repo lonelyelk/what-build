@@ -146,9 +146,10 @@ func Find(projects []string, builds []string) {
 			}
 			time, err := time.Parse(time.RFC3339, ciBuild.StopTime)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Printf("  Deployed to %s at %v\n", build, ciBuild.StopTime)
+			} else {
+				fmt.Printf("  Deployed to %s at %v\n", build, time)
 			}
-			fmt.Printf("  Deployed to %s at %v\n", build, time)
 			fmt.Printf("    - Branch: %s\n", ciBuild.Branch)
 			fmt.Printf("    - Commit: %s\n", ciBuild.Subject)
 			fmt.Printf("    - Revision: %s\n\n", ciBuild.VcsRevision)
