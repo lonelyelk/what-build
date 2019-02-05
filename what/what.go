@@ -1,4 +1,4 @@
-package main
+package what
 
 import (
 	"encoding/json"
@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/spf13/viper"
 
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/joho/godotenv"
 )
@@ -137,14 +137,16 @@ func findCIBuild(projName string, buildName string, config *Config) (ciBuild *CI
 }
 
 func getConfig() (config *Config, err error) {
-	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_REGION"))}))
-	iamc := iam.New(session)
-	userOut, err := iamc.GetUser(&iam.GetUserInput{})
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(userOut)
-	paramIn := ssm.GetParameterInput{Name: aws.String(os.Getenv("AWS_SSM_NAME_CONFIG"))}
+	awsRegion := viper.GetString("aws_region")
+	awsSsmPath := viper.GetString("aws_ssm_configuration")
+	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(awsRegion)}))
+	// iamc := iam.New(session)
+	// userOut, err := iamc.GetUser(&iam.GetUserInput{})
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(userOut)
+	paramIn := ssm.GetParameterInput{Name: aws.String(awsSsmPath)}
 	ssmc := ssm.New(session)
 	paramOut, err := ssmc.GetParameter(&paramIn)
 	if err != nil {
@@ -157,22 +159,44 @@ func getConfig() (config *Config, err error) {
 	return
 }
 
-func notMain() {
+// Find looks for CircleCI builds of given projects and prints their info
+func Find(projects []string, builds []string) {
 	config, err := getConfig()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	ciBuild, err := findCIBuild("console", "qa3", config)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	if len(projects) == 0 {
+		projects = make([]string, len(config.Projects))
+		for i, p := range config.Projects {
+			projects[i] = p.Name
+		}
 	}
 
-	time, err := time.Parse(time.RFC3339, ciBuild.StopTime)
-	if err != nil {
-		fmt.Println(err)
+	if len(builds) == 0 {
+		builds = make([]string, len(config.Builds))
+		for i, b := range config.Builds {
+			builds[i] = b.Name
+		}
 	}
-	fmt.Printf("Deployed to %s at %v\nCommit: %s\nRevision: %s\n", "qa3", time, ciBuild.Subject, ciBuild.VcsRevision)
+
+	for _, project := range projects {
+		fmt.Printf("\nProject %s:\n", project)
+		for _, build := range builds {
+			ciBuild, err := findCIBuild(project, build, config)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			time, err := time.Parse(time.RFC3339, ciBuild.StopTime)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Printf("  Deployed to %s at %v\n", build, time)
+			fmt.Printf("    - Branch: %s\n", ciBuild.Branch)
+			fmt.Printf("    - Commit: %s\n", ciBuild.Subject)
+			fmt.Printf("    - Revision: %s\n\n", ciBuild.VcsRevision)
+		}
+	}
 }
