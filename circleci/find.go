@@ -41,42 +41,35 @@ func buildRequest(url string, token string, limit int, offset int) (req *http.Re
 	return
 }
 
+func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse, err error) {
+	client := &http.Client{Timeout: 10 * time.Second}
+	req, err := buildRequest(projectConfig.URL, projectConfig.Token, aws.RemoteConfig.Settings.PerPage, offset)
+	if err != nil {
+		return
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+	builds = make([]CIBuildResponse, 0)
+	err = json.NewDecoder(res.Body).Decode(&builds)
+	return
+}
+
 // FindBuild looks for a build in CircleCI
 func FindBuild(projName string, buildName string) (ciBuild *CIBuildResponse, err error) {
-	client := &http.Client{Timeout: 10 * time.Second}
-	config := aws.RemoteConfig
-	var buildConfig *aws.Build
-	var projectConfig *aws.Project
-	for _, p := range config.Projects {
-		if p.Name == projName {
-			projectConfig = &p
-			break
-		}
+	projectConfig, err := aws.FindProject(projName)
+	if err != nil {
+		return nil, err
 	}
-	for _, b := range config.Builds {
-		if b.Name == buildName {
-			buildConfig = &b
-			break
-		}
+	buildConfig, err := aws.FindBuild(buildName)
+	if err != nil {
+		return nil, err
 	}
-	if projectConfig == nil {
-		return nil, errors.New("Project config not found")
-	}
-	if buildConfig == nil {
-		return nil, errors.New("Build config not found")
-	}
-	for offset := 0; offset < config.Settings.MaxOffset; offset = offset + config.Settings.PerPage {
-		req, err := buildRequest(projectConfig.URL, projectConfig.Token, config.Settings.PerPage, offset)
+	for offset := 0; offset < aws.RemoteConfig.Settings.MaxOffset; offset = offset + aws.RemoteConfig.Settings.PerPage {
+		ciBuilds, err := getBuilds(projectConfig, offset)
 		if err != nil {
-			return nil, err
-		}
-		res, err := client.Do(req)
-		if err != nil {
-			return nil, err
-		}
-		defer res.Body.Close()
-		ciBuilds := make([]CIBuildResponse, 0)
-		if err = json.NewDecoder(res.Body).Decode(&ciBuilds); err != nil {
 			return nil, err
 		}
 		for _, cib := range ciBuilds {
@@ -94,7 +87,7 @@ func FindBuild(projName string, buildName string) (ciBuild *CIBuildResponse, err
 				return &cib, nil
 			}
 		}
-		if len(ciBuilds) < config.Settings.PerPage {
+		if len(ciBuilds) < aws.RemoteConfig.Settings.PerPage {
 			break
 		}
 	}
