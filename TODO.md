@@ -2,4 +2,6 @@
 - [ ] Move circleci to a separate file/module
 - [ ] Implement time zones as local config
 - [ ] Rename build_parameters to search_build_parameters
-- [ ] Add color output (configurable?)
+- [x] Add color output (configurable?)
+- [ ] Add Readme
+- [ ] Add License
