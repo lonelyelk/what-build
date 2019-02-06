@@ -7,15 +7,10 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/fatih/color"
-	"github.com/spf13/viper"
-
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/lonelyelk/what-build/aws"
 )
 
 func buildRequest(url string, token string, limit int, offset int) (req *http.Request, err error) {
@@ -34,10 +29,11 @@ func buildRequest(url string, token string, limit int, offset int) (req *http.Re
 	req.URL.RawQuery = q.Encode()
 	return
 }
-func findCIBuild(projName string, buildName string, config *Config) (ciBuild *CIBuildResponse, err error) {
+func findCIBuild(projName string, buildName string) (ciBuild *CIBuildResponse, err error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	var buildConfig *Build
-	var projectConfig *Project
+	config := aws.RemoteConfig
+	var buildConfig *aws.Build
+	var projectConfig *aws.Project
 	for _, p := range config.Projects {
 		if p.Name == projName {
 			projectConfig = &p
@@ -92,34 +88,11 @@ func findCIBuild(projName string, buildName string, config *Config) (ciBuild *CI
 	return nil, errors.New("Build not found")
 }
 
-func getConfig() (config *Config, err error) {
-	awsRegion := viper.GetString("aws_region")
-	awsSsmPath := viper.GetString("aws_ssm_configuration")
-	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(awsRegion)}))
-	// iamc := iam.New(session)
-	// userOut, err := iamc.GetUser(&iam.GetUserInput{})
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(userOut)
-	paramIn := ssm.GetParameterInput{Name: aws.String(awsSsmPath)}
-	ssmc := ssm.New(session)
-	paramOut, err := ssmc.GetParameter(&paramIn)
-	if err != nil {
-		return
-	}
-	config = &Config{}
-	if err = json.NewDecoder(strings.NewReader(*paramOut.Parameter.Value)).Decode(config); err != nil {
-		return nil, err
-	}
-	return
-}
-
 // Find looks for CircleCI builds of given projects and prints their info
 func Find(projects []string, builds []string) {
-	config, err := getConfig()
-	if err != nil {
-		fmt.Println(err)
+	config := aws.RemoteConfig
+	if len(config.Builds) == 0 || len(config.Builds) == 0 {
+		fmt.Println("Error reading SSM config")
 		os.Exit(1)
 	}
 
@@ -140,7 +113,7 @@ func Find(projects []string, builds []string) {
 	for _, project := range projects {
 		fmt.Printf("\nProject %s:\n", color.New(color.FgWhite, color.Bold).Sprint(project))
 		for _, build := range builds {
-			ciBuild, err := findCIBuild(project, build, config)
+			ciBuild, err := findCIBuild(project, build)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)

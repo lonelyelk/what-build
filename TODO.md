@@ -5,3 +5,5 @@
 - [x] Add color output (configurable?)
 - [ ] Add Readme
 - [ ] Add License
+- [ ] Linters on complexity
+- [ ] Tests

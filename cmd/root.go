@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/lonelyelk/what-build/aws"
 	"github.com/manifoldco/promptui"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -75,6 +76,7 @@ func initConfig() {
 			os.Exit(1)
 		}
 	}
+	aws.ReadConfig()
 }
 
 var rootCmd = &cobra.Command{
