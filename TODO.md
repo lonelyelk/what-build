@@ -7,3 +7,5 @@
 - [ ] Add License
 - [ ] Linters on complexity
 - [ ] Tests
+- [ ] CI
+- [ ] Install
