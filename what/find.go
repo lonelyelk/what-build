@@ -55,7 +55,7 @@ func Find(projects []string, builds []string) {
 				}
 			}
 			fmt.Printf("    - Branch: %s\n", color.New(branchColor).Sprint(ciBuild.Branch))
-			fmt.Printf("    - Commit: %s\n", color.New(color.FgBlue).Sprint(ciBuild.Subject))
+			fmt.Printf("    - Commit: %s\n", color.New(color.FgMagenta).Sprint(ciBuild.Subject))
 			fmt.Printf("    - Revision: %s\n\n", color.New(color.FgMagenta).Sprint(ciBuild.VcsRevision))
 		}
 	}
