@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/fatih/color"
 	"github.com/spf13/viper"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -137,7 +138,7 @@ func Find(projects []string, builds []string) {
 	}
 
 	for _, project := range projects {
-		fmt.Printf("\nProject %s:\n", project)
+		fmt.Printf("\nProject %s:\n", color.New(color.FgWhite, color.Bold).Sprint(project))
 		for _, build := range builds {
 			ciBuild, err := findCIBuild(project, build, config)
 			if err != nil {
@@ -146,13 +147,20 @@ func Find(projects []string, builds []string) {
 			}
 			time, err := time.Parse(time.RFC3339, ciBuild.StopTime)
 			if err != nil {
-				fmt.Printf("  Deployed to %s at %v\n", build, ciBuild.StopTime)
+				fmt.Printf("  Deployed to %s at %v\n", color.New(color.FgCyan).Sprint(build), ciBuild.StopTime)
 			} else {
-				fmt.Printf("  Deployed to %s at %v\n", build, time)
+				fmt.Printf("  Deployed to %s at %v\n", color.New(color.FgCyan).Sprint(build), time)
 			}
-			fmt.Printf("    - Branch: %s\n", ciBuild.Branch)
-			fmt.Printf("    - Commit: %s\n", ciBuild.Subject)
-			fmt.Printf("    - Revision: %s\n\n", ciBuild.VcsRevision)
+			branchColor := color.FgYellow
+			greenBranches := [3]string{"master", "staging", "develop"}
+			for _, name := range greenBranches {
+				if name == ciBuild.Branch {
+					branchColor = color.FgGreen
+				}
+			}
+			fmt.Printf("    - Branch: %s\n", color.New(branchColor).Sprint(ciBuild.Branch))
+			fmt.Printf("    - Commit: %s\n", color.New(color.FgBlue).Sprint(ciBuild.Subject))
+			fmt.Printf("    - Revision: %s\n\n", color.New(color.FgMagenta).Sprint(ciBuild.VcsRevision))
 		}
 	}
 }
