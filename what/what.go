@@ -146,10 +146,11 @@ func Find(projects []string, builds []string) {
 				os.Exit(1)
 			}
 			time, err := time.Parse(time.RFC3339, ciBuild.StopTime)
+			sprintBuild := color.New(color.FgCyan, color.Bold).SprintFunc()
 			if err != nil {
-				fmt.Printf("  Deployed to %s at %v\n", color.New(color.FgCyan).Sprint(build), ciBuild.StopTime)
+				fmt.Printf("  Deployed to %s at %v\n", sprintBuild(build), ciBuild.StopTime)
 			} else {
-				fmt.Printf("  Deployed to %s at %v\n", color.New(color.FgCyan).Sprint(build), time)
+				fmt.Printf("  Deployed to %s at %v\n", sprintBuild(build), time)
 			}
 			branchColor := color.FgYellow
 			greenBranches := [3]string{"master", "staging", "develop"}
