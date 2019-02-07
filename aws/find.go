@@ -10,19 +10,19 @@ func findBuild(name string) (build *Build) {
 }
 
 // FindBuilds looks for builds in SSM config by names
-func FindBuilds(names []string) []*Build {
-	var buildCfgs []*Build
+func FindBuilds(names []string) []Build {
+	var buildCfgs []Build
 	if len(names) != 0 {
-		buildCfgs = make([]*Build, 0)
+		buildCfgs = make([]Build, 0)
 		for _, name := range names {
 			if b := findBuild(name); b != nil {
-				buildCfgs = append(buildCfgs, b)
+				buildCfgs = append(buildCfgs, *b)
 			}
 		}
 	} else {
-		buildCfgs = make([]*Build, len(RemoteConfig.Builds))
+		buildCfgs = make([]Build, len(RemoteConfig.Builds))
 		for i, b := range RemoteConfig.Builds {
-			buildCfgs[i] = &b
+			buildCfgs[i] = b
 		}
 	}
 	return buildCfgs
@@ -38,19 +38,19 @@ func findProject(name string) (project *Project) {
 }
 
 // FindProjects looks for projects in SSM config by names
-func FindProjects(names []string) []*Project {
-	var projCfgs []*Project
+func FindProjects(names []string) []Project {
+	var projCfgs []Project
 	if len(names) != 0 {
-		projCfgs = make([]*Project, 0)
+		projCfgs = make([]Project, 0)
 		for _, name := range names {
 			if p := findProject(name); p != nil {
-				projCfgs = append(projCfgs, p)
+				projCfgs = append(projCfgs, *p)
 			}
 		}
 	} else {
-		projCfgs = make([]*Project, len(RemoteConfig.Projects))
+		projCfgs = make([]Project, len(RemoteConfig.Projects))
 		for i, p := range RemoteConfig.Projects {
-			projCfgs[i] = &p
+			projCfgs[i] = p
 		}
 	}
 	return projCfgs
