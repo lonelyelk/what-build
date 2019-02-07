@@ -9,4 +9,4 @@
 - [ ] Tests
 - [ ] CI
 - [ ] Install
-- [ ] Refactor lookup by name
+- [x] Refactor lookup by name

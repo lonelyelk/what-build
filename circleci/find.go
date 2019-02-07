@@ -58,17 +58,9 @@ func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse
 }
 
 // FindBuild looks for a build in CircleCI
-func FindBuild(projName string, buildName string) (ciBuild *CIBuildResponse, err error) {
-	projectConfig, err := aws.FindProject(projName)
-	if err != nil {
-		return nil, err
-	}
-	buildConfig, err := aws.FindBuild(buildName)
-	if err != nil {
-		return nil, err
-	}
+func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (ciBuild *CIBuildResponse, err error) {
 	for offset := 0; offset < aws.RemoteConfig.Settings.MaxOffset; offset = offset + aws.RemoteConfig.Settings.PerPage {
-		ciBuilds, err := getBuilds(projectConfig, offset)
+		ciBuilds, err := getBuilds(projCfg, offset)
 		if err != nil {
 			return nil, err
 		}
@@ -77,7 +69,7 @@ func FindBuild(projName string, buildName string) (ciBuild *CIBuildResponse, err
 				continue
 			}
 			match := true
-			for key, value := range buildConfig.BuildParameters {
+			for key, value := range buildCfg.BuildParameters {
 				if cib.BuildParameters[key] != value {
 					match = false
 					break

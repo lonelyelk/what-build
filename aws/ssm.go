@@ -3,6 +3,7 @@ package aws
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -56,7 +57,11 @@ func ReadConfig() {
 	paramOut, err := ssmc.GetParameter(&paramIn)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 	json.NewDecoder(strings.NewReader(*paramOut.Parameter.Value)).Decode(RemoteConfig)
+	if len(RemoteConfig.Builds) == 0 || len(RemoteConfig.Builds) == 0 {
+		fmt.Println("Error reading SSM config")
+		os.Exit(1)
+	}
 }

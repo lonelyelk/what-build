@@ -1,31 +1,60 @@
 package aws
 
-import "errors"
-
-// FindBuild looks for a build in SSM config by name
-func FindBuild(name string) (build *Build, err error) {
+func findBuild(name string) (build *Build) {
 	for _, b := range RemoteConfig.Builds {
 		if b.Name == name {
-			build = &b
-			break
+			return &b
 		}
 	}
-	if build == nil {
-		err = errors.New("Build config not found")
-	}
-	return
+	return nil
 }
 
-// FindProject looks for a project in SSM config by name
-func FindProject(name string) (project *Project, err error) {
-	for _, p := range RemoteConfig.Projects {
-		if p.Name == name {
-			project = &p
-			break
+// FindBuilds looks for builds in SSM config by names
+func FindBuilds(names []string) []*Build {
+	var buildCfgs []*Build
+	if len(names) != 0 {
+		buildCfgs = make([]*Build, 0)
+		for _, name := range names {
+			b := findBuild(name)
+			if b != nil {
+				buildCfgs = append(buildCfgs, b)
+			}
+		}
+	} else {
+		buildCfgs = make([]*Build, len(RemoteConfig.Builds))
+		for i, b := range RemoteConfig.Builds {
+			buildCfgs[i] = &b
 		}
 	}
-	if project == nil {
-		err = errors.New("Project config not found")
+	return buildCfgs
+}
+
+func findProject(name string) (project *Project) {
+	for _, p := range RemoteConfig.Projects {
+		if p.Name == name {
+			return &p
+		}
 	}
-	return
+	return nil
+}
+
+// FindProjects looks for projects in SSM config by names
+func FindProjects(names []string) []*Project {
+
+	var projCfgs []*Project
+	if len(names) != 0 {
+		projCfgs = make([]*Project, 0)
+		for _, name := range names {
+			p := findProject(name)
+			if p != nil {
+				projCfgs = append(projCfgs, p)
+			}
+		}
+	} else {
+		projCfgs = make([]*Project, len(RemoteConfig.Projects))
+		for i, p := range RemoteConfig.Projects {
+			projCfgs[i] = &p
+		}
+	}
+	return projCfgs
 }
