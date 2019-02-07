@@ -57,27 +57,34 @@ func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse
 	return
 }
 
+func findByBuildParameters(builds *[]CIBuildResponse, params map[string]interface{}) *CIBuildResponse {
+	for _, cib := range *builds {
+		if cib.BuildParameters == nil {
+			continue
+		}
+		match := true
+		for key, value := range params {
+			if cib.BuildParameters[key] != value {
+				match = false
+				break
+			}
+		}
+		if match {
+			return &cib
+		}
+	}
+	return nil
+}
+
 // FindBuild looks for a build in CircleCI
-func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (ciBuild *CIBuildResponse, err error) {
+func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, error) {
 	for offset := 0; offset < aws.RemoteConfig.Settings.MaxOffset; offset = offset + aws.RemoteConfig.Settings.PerPage {
 		ciBuilds, err := getBuilds(projCfg, offset)
 		if err != nil {
 			return nil, err
 		}
-		for _, cib := range ciBuilds {
-			if cib.BuildParameters == nil {
-				continue
-			}
-			match := true
-			for key, value := range buildCfg.BuildParameters {
-				if cib.BuildParameters[key] != value {
-					match = false
-					break
-				}
-			}
-			if match {
-				return &cib, nil
-			}
+		if cib := findByBuildParameters(&ciBuilds, buildCfg.BuildParameters); cib != nil {
+			return cib, nil
 		}
 		if len(ciBuilds) < aws.RemoteConfig.Settings.PerPage {
 			break
