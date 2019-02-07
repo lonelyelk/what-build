@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func promptAndWriteConfig(promptStr string, key string) error {
+func promptAndWriteConfig(promptStr string, key string) {
 	validate := func(input string) error {
 		if input == "" {
 			return errors.New("parameter empty")
@@ -26,10 +26,14 @@ func promptAndWriteConfig(promptStr string, key string) error {
 	}
 	result, err := prompt.Run()
 	if err != nil {
-		return err
+		fmt.Println(err)
+		os.Exit(1)
 	}
 	viper.Set(key, result)
-	return viper.WriteConfig()
+	if err = viper.WriteConfig(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func initConfig() {
@@ -43,26 +47,14 @@ func initConfig() {
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println("No configuration found:", err)
-		if err = promptAndWriteConfig("Enter AWS region", "aws_region"); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		if err = promptAndWriteConfig("Enter path for SSM configuration", "aws_ssm_configuration"); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		promptAndWriteConfig("Enter AWS region", "aws_region")
+		promptAndWriteConfig("Enter path for SSM configuration", "aws_ssm_configuration")
 	}
 	if viper.GetString("aws_region") == "" {
-		if err = promptAndWriteConfig("Enter AWS region", "aws_region"); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		promptAndWriteConfig("Enter AWS region", "aws_region")
 	}
 	if viper.GetString("aws_ssm_configuration") == "" {
-		if err = promptAndWriteConfig("Enter path for SSM configuration", "aws_ssm_configuration"); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		promptAndWriteConfig("Enter path for SSM configuration", "aws_ssm_configuration")
 	}
 	aws.ReadConfig()
 }
