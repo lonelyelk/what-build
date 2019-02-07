@@ -15,8 +15,7 @@ func FindBuilds(names []string) []*Build {
 	if len(names) != 0 {
 		buildCfgs = make([]*Build, 0)
 		for _, name := range names {
-			b := findBuild(name)
-			if b != nil {
+			if b := findBuild(name); b != nil {
 				buildCfgs = append(buildCfgs, b)
 			}
 		}
@@ -40,13 +39,11 @@ func findProject(name string) (project *Project) {
 
 // FindProjects looks for projects in SSM config by names
 func FindProjects(names []string) []*Project {
-
 	var projCfgs []*Project
 	if len(names) != 0 {
 		projCfgs = make([]*Project, 0)
 		for _, name := range names {
-			p := findProject(name)
-			if p != nil {
+			if p := findProject(name); p != nil {
 				projCfgs = append(projCfgs, p)
 			}
 		}
