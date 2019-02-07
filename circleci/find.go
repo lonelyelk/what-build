@@ -2,7 +2,7 @@ package circleci
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -90,5 +90,5 @@ func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, err
 			break
 		}
 	}
-	return nil, errors.New("Build not found")
+	return nil, fmt.Errorf("Build %s not found", buildCfg.Name)
 }

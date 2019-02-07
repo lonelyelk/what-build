@@ -2,7 +2,6 @@ package what
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/fatih/color"
@@ -18,6 +17,18 @@ func timeString(str string) string {
 	return t.In(time.Local).Format("15:04 02.01.2006")
 }
 
+func printBuild(buildName string, ciBuild *circleci.CIBuildResponse) {
+	sprintBuild := color.New(color.FgCyan, color.Bold).SprintFunc()
+	fmt.Printf("  Deployed to %s at %s\n", sprintBuild(buildName), timeString(ciBuild.StopTime))
+	branchColor := color.FgYellow
+	if ciBuild.Branch == "master" || ciBuild.Branch == "staging" || ciBuild.Branch == "develop" {
+		branchColor = color.FgGreen
+	}
+	fmt.Printf("    - Branch: %s\n", color.New(branchColor).Sprint(ciBuild.Branch))
+	fmt.Printf("    - Commit: %s\n", color.New(color.FgMagenta).Sprint(ciBuild.Subject))
+	fmt.Printf("    - Revision: %s\n\n", color.New(color.FgMagenta).Sprint(ciBuild.VcsRevision))
+}
+
 // Find looks for CircleCI builds of given projects and prints their info
 func Find(projects []string, builds []string) {
 	projCfgs := aws.FindProjects(projects)
@@ -29,17 +40,9 @@ func Find(projects []string, builds []string) {
 			ciBuild, err := circleci.FindBuild(&projCfg, &buildCfg)
 			if err != nil {
 				fmt.Println(err)
-				os.Exit(1)
+				break
 			}
-			sprintBuild := color.New(color.FgCyan, color.Bold).SprintFunc()
-			fmt.Printf("  Deployed to %s at %s\n", sprintBuild(buildCfg.Name), timeString(ciBuild.StopTime))
-			branchColor := color.FgYellow
-			if ciBuild.Branch == "master" || ciBuild.Branch == "staging" || ciBuild.Branch == "develop" {
-				branchColor = color.FgGreen
-			}
-			fmt.Printf("    - Branch: %s\n", color.New(branchColor).Sprint(ciBuild.Branch))
-			fmt.Printf("    - Commit: %s\n", color.New(color.FgMagenta).Sprint(ciBuild.Subject))
-			fmt.Printf("    - Revision: %s\n\n", color.New(color.FgMagenta).Sprint(ciBuild.VcsRevision))
+			printBuild(buildCfg.Name, ciBuild)
 		}
 	}
 }
