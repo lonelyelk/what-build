@@ -65,3 +65,18 @@ The parameter is expected to contain a json string with projects and builds info
     ]
 }
 ```
+
+## TODO
+
+- [ ] Add License
+- [ ] Linters on complexity
+- [ ] Tests
+- [ ] CI
+- [ ] Install
+- [ ] Trigger build with params
+- [ ] Add options to build parameters to trigger
+- [ ] Add user from AWS IAM to deploy parameters
+- [ ] Check status, show running builds
+- [ ] List available things with info
+- [ ] Version
+- [ ] Dependencies lock
