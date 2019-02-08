@@ -5,3 +5,7 @@
 - [ ] Tests
 - [ ] CI
 - [ ] Install
+- [ ] Trigger build with params
+- [ ] Add options to build parameters to trigger
+- [ ] Check status, show running builds
+- [ ] List available things with info
