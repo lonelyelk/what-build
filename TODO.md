@@ -1,5 +1,5 @@
 - [x] Rename build_parameters to search_build_parameters
-- [ ] Add Readme
+- [x] Add Readme
 - [ ] Add License
 - [ ] Linters on complexity
 - [ ] Tests
@@ -7,5 +7,6 @@
 - [ ] Install
 - [ ] Trigger build with params
 - [ ] Add options to build parameters to trigger
+- [ ] Add user from AWS IAM to deploy parameters
 - [ ] Check status, show running builds
 - [ ] List available things with info
