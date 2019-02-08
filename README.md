@@ -68,6 +68,8 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
+- [ ] Extract remote config reading to a package
+- [ ] Make local config creation optional (ex. for version calls)
 - [ ] Add License
 - [ ] Linters on complexity
 - [ ] Tests
@@ -78,5 +80,5 @@ The parameter is expected to contain a json string with projects and builds info
 - [ ] Add user from AWS IAM to deploy parameters
 - [ ] Check status, show running builds
 - [ ] List available things with info
-- [ ] Version
+- [x] Version
 - [ ] Dependencies lock
