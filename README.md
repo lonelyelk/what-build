@@ -5,7 +5,11 @@ coordinate QA process.
 
 ## Installation
 
-To be defined.
+Assuming Go installed and paths to $GOHOME/bin is added to $PATH
+
+```
+go get github.com/lonelyelk/what-build
+```
 
 ## Usage
 
@@ -74,7 +78,7 @@ The parameter is expected to contain a json string with projects and builds info
 - [ ] Linters on complexity
 - [ ] Tests
 - [ ] CI
-- [ ] Install
+- [x] Install
 - [ ] Trigger build with params
 - [ ] Add options to build parameters to trigger
 - [ ] Add user from AWS IAM to deploy parameters
