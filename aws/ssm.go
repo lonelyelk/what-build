@@ -27,8 +27,8 @@ type Project struct {
 
 // Build contains search conditions and identification
 type Build struct {
-	Name            string                 `json:"name"`
-	BuildParameters map[string]interface{} `json:"build_parameters"`
+	Name                  string            `json:"name"`
+	SearchBuildParameters map[string]string `json:"search_build_parameters"`
 }
 
 // Config contains projects and builds along with settings for the crawler

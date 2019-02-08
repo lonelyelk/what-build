@@ -12,16 +12,16 @@ import (
 
 // CIBuildResponse is a JSON extraits for build entity on circleci
 type CIBuildResponse struct {
-	BuildNum        int                    `json:"build_num"`
-	Branch          string                 `json:"branch"`
-	VcsRevision     string                 `json:"vcs_revision"`
-	Subject         string                 `json:"subject"`
-	Why             string                 `json:"why"`
-	DontBuild       string                 `json:"dont_build"`
-	StopTime        string                 `json:"stop_time"`
-	BuildTimeMillis int                    `json:"build_time_millis"`
-	Status          string                 `json:"status"`
-	BuildParameters map[string]interface{} `json:"build_parameters"`
+	BuildNum        int               `json:"build_num"`
+	Branch          string            `json:"branch"`
+	VcsRevision     string            `json:"vcs_revision"`
+	Subject         string            `json:"subject"`
+	Why             string            `json:"why"`
+	DontBuild       string            `json:"dont_build"`
+	StopTime        string            `json:"stop_time"`
+	BuildTimeMillis int               `json:"build_time_millis"`
+	Status          string            `json:"status"`
+	BuildParameters map[string]string `json:"build_parameters"`
 }
 
 func buildRequest(url string, token string, limit int, offset int) (req *http.Request, err error) {
@@ -57,7 +57,7 @@ func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse
 	return
 }
 
-func findByBuildParameters(builds *[]CIBuildResponse, params map[string]interface{}) *CIBuildResponse {
+func findByBuildParameters(builds *[]CIBuildResponse, params map[string]string) *CIBuildResponse {
 	for _, cib := range *builds {
 		if cib.BuildParameters == nil {
 			continue
@@ -83,7 +83,7 @@ func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, err
 		if err != nil {
 			return nil, err
 		}
-		if cib := findByBuildParameters(&ciBuilds, buildCfg.BuildParameters); cib != nil {
+		if cib := findByBuildParameters(&ciBuilds, buildCfg.SearchBuildParameters); cib != nil {
 			return cib, nil
 		}
 		if len(ciBuilds) < aws.RemoteConfig.Settings.PerPage {

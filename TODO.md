@@ -1,4 +1,4 @@
-- [ ] Rename build_parameters to search_build_parameters
+- [x] Rename build_parameters to search_build_parameters
 - [ ] Add Readme
 - [ ] Add License
 - [ ] Linters on complexity
