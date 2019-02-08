@@ -20,9 +20,9 @@ type Settings struct {
 
 // Project contains info to fetch builds from CircleCI
 type Project struct {
-	Name  string `json:"name"`
-	URL   string `json:"url"`
-	Token string `json:"token"`
+	Name          string `json:"name"`
+	CircleCIURL   string `json:"circleci_url"`
+	CircleCIToken string `json:"circleci_token"`
 }
 
 // Build contains search conditions and identification

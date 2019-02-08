@@ -43,7 +43,7 @@ func buildRequest(url string, token string, limit int, offset int) (req *http.Re
 
 func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse, err error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	req, err := buildRequest(projectConfig.URL, projectConfig.Token, aws.RemoteConfig.Settings.PerPage, offset)
+	req, err := buildRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, aws.RemoteConfig.Settings.PerPage, offset)
 	if err != nil {
 		return
 	}
