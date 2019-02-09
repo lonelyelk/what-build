@@ -42,8 +42,9 @@ func buildRequest(url string, token string, limit int, offset int) (req *http.Re
 }
 
 func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse, err error) {
+	config := aws.GetRemoteConfig()
 	client := &http.Client{Timeout: 10 * time.Second}
-	req, err := buildRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, aws.RemoteConfig.Settings.PerPage, offset)
+	req, err := buildRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, config.Settings.PerPage, offset)
 	if err != nil {
 		return
 	}
@@ -78,7 +79,8 @@ func findByBuildParameters(builds *[]CIBuildResponse, params map[string]interfac
 
 // FindBuild looks for a build in CircleCI
 func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, error) {
-	for offset := 0; offset < aws.RemoteConfig.Settings.MaxOffset; offset = offset + aws.RemoteConfig.Settings.PerPage {
+	config := aws.GetRemoteConfig()
+	for offset := 0; offset < config.Settings.MaxOffset; offset = offset + config.Settings.PerPage {
 		ciBuilds, err := getBuilds(projCfg, offset)
 		if err != nil {
 			return nil, err
@@ -86,7 +88,7 @@ func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, err
 		if cib := findByBuildParameters(&ciBuilds, buildCfg.SearchBuildParameters); cib != nil {
 			return cib, nil
 		}
-		if len(ciBuilds) < aws.RemoteConfig.Settings.PerPage {
+		if len(ciBuilds) < config.Settings.PerPage {
 			break
 		}
 	}

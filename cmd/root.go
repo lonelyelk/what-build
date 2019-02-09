@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lonelyelk/what-build/aws"
 	"github.com/manifoldco/promptui"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -56,7 +55,6 @@ func initConfig() {
 	if viper.GetString("aws_ssm_configuration") == "" {
 		promptAndWriteConfig("Enter path for SSM configuration", "aws_ssm_configuration")
 	}
-	aws.ReadConfig()
 }
 
 var rootCmd = &cobra.Command{

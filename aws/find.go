@@ -1,55 +1,53 @@
 package aws
 
-func findBuild(name string) (build *Build) {
-	for _, b := range RemoteConfig.Builds {
+func appendBuild(name string, builds []Build, selection *[]Build) {
+	for _, b := range builds {
 		if b.Name == name {
-			return &b
+			*selection = append(*selection, b)
+			return
 		}
 	}
-	return nil
 }
 
 // FindBuilds looks for builds in SSM config by names
 func FindBuilds(names []string) []Build {
+	config := GetRemoteConfig()
 	var buildCfgs []Build
 	if len(names) != 0 {
 		buildCfgs = make([]Build, 0)
 		for _, name := range names {
-			if b := findBuild(name); b != nil {
-				buildCfgs = append(buildCfgs, *b)
-			}
+			appendBuild(name, config.Builds, &buildCfgs)
 		}
 	} else {
-		buildCfgs = make([]Build, len(RemoteConfig.Builds))
-		for i, b := range RemoteConfig.Builds {
+		buildCfgs = make([]Build, len(config.Builds))
+		for i, b := range config.Builds {
 			buildCfgs[i] = b
 		}
 	}
 	return buildCfgs
 }
 
-func findProject(name string) (project *Project) {
-	for _, p := range RemoteConfig.Projects {
+func appendProject(name string, projects []Project, selection *[]Project) {
+	for _, p := range projects {
 		if p.Name == name {
-			return &p
+			*selection = append(*selection, p)
+			return
 		}
 	}
-	return nil
 }
 
 // FindProjects looks for projects in SSM config by names
 func FindProjects(names []string) []Project {
+	config := GetRemoteConfig()
 	var projCfgs []Project
 	if len(names) != 0 {
 		projCfgs = make([]Project, 0)
 		for _, name := range names {
-			if p := findProject(name); p != nil {
-				projCfgs = append(projCfgs, *p)
-			}
+			appendProject(name, config.Projects, &projCfgs)
 		}
 	} else {
-		projCfgs = make([]Project, len(RemoteConfig.Projects))
-		for i, p := range RemoteConfig.Projects {
+		projCfgs = make([]Project, len(config.Projects))
+		for i, p := range config.Projects {
 			projCfgs[i] = p
 		}
 	}

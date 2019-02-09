@@ -38,11 +38,17 @@ type Config struct {
 	Builds   []Build   `json:"builds"`
 }
 
-// RemoteConfig of the tool
-var RemoteConfig = &Config{}
+var remoteConfig *Config
 
-// ReadConfig needs to be run to have Configuration
-func ReadConfig() {
+// GetRemoteConfig returns cached config from SSM or fetches one
+func GetRemoteConfig() *Config {
+	if remoteConfig != nil {
+		return remoteConfig
+	}
+	return readConfig()
+}
+
+func readConfig() *Config {
 	region := viper.GetString("aws_region")
 	ssmPath := viper.GetString("aws_ssm_configuration")
 	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(region)}))
@@ -59,9 +65,11 @@ func ReadConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	json.NewDecoder(strings.NewReader(*paramOut.Parameter.Value)).Decode(RemoteConfig)
-	if len(RemoteConfig.Builds) == 0 || len(RemoteConfig.Builds) == 0 {
+	remoteConfig = &Config{}
+	json.NewDecoder(strings.NewReader(*paramOut.Parameter.Value)).Decode(remoteConfig)
+	if len(remoteConfig.Builds) == 0 || len(remoteConfig.Builds) == 0 {
 		fmt.Println("Error reading SSM config")
 		os.Exit(1)
 	}
+	return remoteConfig
 }
