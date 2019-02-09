@@ -1,8 +1,12 @@
 binary=what-build
 version=`git describe --tags`
+flags=-ldflags="-X github.com/lonelyelk/what-build/what.Version=${version}"
 
 build:
-	go build -ldflags="-X github.com/lonelyelk/what-build/what.Version=${version}" -o ./bin/$(binary)
+	go build ${flags} -o ./bin/$(binary)
 
 install:
-	go install -ldflags="-X github.com/lonelyelk/what-build/what.Version=${version}"
+	go install ${flags}
+
+run:
+	go run ${flags} ./main.go ${ARGS}
