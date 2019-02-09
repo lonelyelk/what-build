@@ -72,8 +72,8 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
-- [ ] Extract remote config reading to a package
-- [ ] Make local config creation optional (ex. for version calls)
+- [x] Extract remote config reading to a package
+- [x] Make local config creation optional (ex. for version calls)
 - [ ] Add License
 - [ ] Linters on complexity
 - [ ] Tests

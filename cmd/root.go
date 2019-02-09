@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/lonelyelk/what-build/what"
+
 	"github.com/manifoldco/promptui"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -66,10 +68,19 @@ var rootCmd = &cobra.Command{
 A tool to search for project builds on Circle CI with given Build Parameters
 
   Created in free time by Sergey Kruk <sergey.kruk@gmail.com>`,
+	Run: func(cmd *cobra.Command, args []string) {
+		version, err := cmd.Flags().GetBool("version")
+		if err == nil && version {
+			what.PrintVersion()
+			return
+		}
+		cmd.Usage()
+	},
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.Flags().BoolP("version", "v", false, "output version")
 }
 
 // Execute runs everytime to trigger cobra init

@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/lonelyelk/what-build/what"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +15,7 @@ var versionCmd = &cobra.Command{
 Current version of a tool
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(Version)
+		what.PrintVersion()
 	},
 }
 
