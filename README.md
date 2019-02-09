@@ -72,17 +72,11 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
-- [x] Extract remote config reading to a package
-- [x] Make local config creation optional (ex. for version calls)
 - [ ] Add License
-- [ ] Linters on complexity
 - [ ] Tests
 - [ ] CI
-- [x] Install
 - [ ] Trigger build with params
 - [ ] Add options to build parameters to trigger
 - [ ] Add user from AWS IAM to deploy parameters
-- [ ] Check status, show running builds
 - [ ] List available things with info
-- [x] Version
 - [ ] Dependencies lock

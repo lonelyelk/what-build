@@ -34,7 +34,6 @@ func buildRequest(url string, token string, limit int, offset int) (req *http.Re
 	q.Add("circle-token", token)
 	q.Add("limit", strconv.Itoa(limit))
 	q.Add("offset", strconv.Itoa(offset))
-	q.Add("filter", "completed")
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("User-Agent", "lonelyelk-what-build-bot")
 	req.URL.RawQuery = q.Encode()

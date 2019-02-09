@@ -19,12 +19,22 @@ func timeString(str string) string {
 
 func printBuild(buildName string, ciBuild *circleci.CIBuildResponse) {
 	sprintBuild := color.New(color.FgCyan, color.Bold).SprintFunc()
-	fmt.Printf("  Deployed to %s at %s\n", sprintBuild(buildName), timeString(ciBuild.StopTime))
-	branchColor := color.FgYellow
-	if ciBuild.Branch == "master" || ciBuild.Branch == "staging" || ciBuild.Branch == "develop" {
-		branchColor = color.FgGreen
+	ifColor := color.FgYellow
+	if ciBuild.Status == "success" {
+		ifColor = color.FgGreen
 	}
-	fmt.Printf("    - Branch: %s\n", color.New(branchColor).Sprint(ciBuild.Branch))
+	if ciBuild.Status == "failed" {
+		ifColor = color.FgRed
+	}
+	fmt.Printf("  Build %s status %s", sprintBuild(buildName), color.New(ifColor).Sprint(ciBuild.Status))
+	if ciBuild.StopTime != "" {
+		fmt.Printf(" at %s\n", timeString(ciBuild.StopTime))
+	}
+	ifColor = color.FgYellow
+	if ciBuild.Branch == "master" || ciBuild.Branch == "staging" || ciBuild.Branch == "develop" {
+		ifColor = color.FgGreen
+	}
+	fmt.Printf("    - Branch: %s\n", color.New(ifColor).Sprint(ciBuild.Branch))
 	fmt.Printf("    - Commit: %s\n", color.New(color.FgMagenta).Sprint(ciBuild.Subject))
 	fmt.Printf("    - Revision: %s\n\n", color.New(color.FgMagenta).Sprint(ciBuild.VcsRevision))
 }
