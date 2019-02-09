@@ -5,7 +5,7 @@ coordinate QA process.
 
 ## Installation
 
-Assuming Go installed and paths to $GOHOME/bin is added to $PATH
+Assuming Go installed and paths to $GOPATH/bin is added to $PATH
 
 ```
 go get github.com/lonelyelk/what-build
