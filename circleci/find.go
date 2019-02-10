@@ -24,7 +24,8 @@ type CIBuildResponse struct {
 	BuildParameters map[string]interface{} `json:"build_parameters"`
 }
 
-func buildRequest(url string, token string, limit int, offset int) (req *http.Request, err error) {
+// FetchBuildsRequest constructs and returns CircleCI API based request for builds
+func FetchBuildsRequest(url string, token string, limit int, offset int) (req *http.Request, err error) {
 	req, err = http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -40,10 +41,10 @@ func buildRequest(url string, token string, limit int, offset int) (req *http.Re
 	return
 }
 
-func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse, err error) {
-	config := aws.GetRemoteConfig()
+// FetchBuildsDo makes a request to a URL from project config to fetch Circle CI builds with limit and offset
+func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []CIBuildResponse, err error) {
 	client := &http.Client{Timeout: 10 * time.Second}
-	req, err := buildRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, config.Settings.PerPage, offset)
+	req, err := FetchBuildsRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, limit, offset)
 	if err != nil {
 		return
 	}
@@ -57,7 +58,8 @@ func getBuilds(projectConfig *aws.Project, offset int) (builds []CIBuildResponse
 	return
 }
 
-func findByBuildParameters(builds *[]CIBuildResponse, params map[string]interface{}) *CIBuildResponse {
+// FindByBuildParameters returns the first build where searched parameters have the same values
+func FindByBuildParameters(builds *[]CIBuildResponse, params map[string]interface{}) *CIBuildResponse {
 	for _, cib := range *builds {
 		if cib.BuildParameters == nil {
 			continue
@@ -80,11 +82,11 @@ func findByBuildParameters(builds *[]CIBuildResponse, params map[string]interfac
 func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, error) {
 	config := aws.GetRemoteConfig()
 	for offset := 0; offset < config.Settings.MaxOffset; offset = offset + config.Settings.PerPage {
-		ciBuilds, err := getBuilds(projCfg, offset)
+		ciBuilds, err := FetchBuildsDo(projCfg, config.Settings.PerPage, offset)
 		if err != nil {
 			return nil, err
 		}
-		if cib := findByBuildParameters(&ciBuilds, buildCfg.SearchBuildParameters); cib != nil {
+		if cib := FindByBuildParameters(&ciBuilds, buildCfg.SearchBuildParameters); cib != nil {
 			return cib, nil
 		}
 		if len(ciBuilds) < config.Settings.PerPage {
