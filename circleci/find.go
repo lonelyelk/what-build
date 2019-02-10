@@ -43,11 +43,11 @@ func FetchBuildsRequest(url string, token string, limit int, offset int) (req *h
 
 // FetchBuildsDo makes a request to a URL from project config to fetch Circle CI builds with limit and offset
 func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []CIBuildResponse, err error) {
-	client := &http.Client{Timeout: 10 * time.Second}
 	req, err := FetchBuildsRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, limit, offset)
 	if err != nil {
 		return
 	}
+	client := &http.Client{Timeout: 10 * time.Second}
 	res, err := client.Do(req)
 	if err != nil {
 		return
