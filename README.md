@@ -72,8 +72,8 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
-- [ ] Add License
-- [ ] Tests
+- [x] Add License
+- [x] Tests
 - [ ] CI
 - [ ] Trigger build with params
 - [ ] Add options to build parameters to trigger
