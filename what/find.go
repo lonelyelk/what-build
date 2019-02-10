@@ -41,8 +41,9 @@ func printBuild(buildName string, ciBuild *circleci.CIBuildResponse) {
 
 // Find looks for CircleCI builds of given projects and prints their info
 func Find(projects []string, builds []string) {
-	projCfgs := aws.FindProjects(projects)
-	buildCfgs := aws.FindBuilds(builds)
+	config := aws.GetRemoteConfig()
+	projCfgs := aws.FindProjects(projects, &config.Projects)
+	buildCfgs := aws.FindBuilds(builds, &config.Builds)
 
 	for _, projCfg := range projCfgs {
 		fmt.Printf("\nProject %s:\n", color.New(color.FgWhite, color.Bold).Sprint(projCfg.Name))
