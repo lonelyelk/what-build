@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -22,6 +23,13 @@ type CIBuildResponse struct {
 	BuildTimeMillis int                    `json:"build_time_millis"`
 	Status          string                 `json:"status"`
 	BuildParameters map[string]interface{} `json:"build_parameters"`
+}
+
+func errStatus(url *url.URL) error {
+	return fmt.Errorf("circleci: project url '%s://%s%s' doesn't exist", url.Scheme, url.Host, url.Path)
+}
+func errBuildNotFound(buildName string, projectName string) error {
+	return fmt.Errorf("circleci: build '%s' not found fpr project '%s'", buildName, projectName)
 }
 
 // FetchBuildsRequest constructs and returns CircleCI API based request for builds
@@ -47,12 +55,20 @@ func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []
 	if err != nil {
 		return
 	}
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := http.Client{
+		Timeout: 10 * time.Second,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return errStatus(req.URL)
+		},
+	}
 	res, err := client.Do(req)
 	if err != nil {
 		return
 	}
 	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		return builds, errStatus(req.URL)
+	}
 	builds = make([]CIBuildResponse, 0)
 	err = json.NewDecoder(res.Body).Decode(&builds)
 	return
@@ -93,5 +109,5 @@ func FindBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, err
 			break
 		}
 	}
-	return nil, fmt.Errorf("Build %s not found", buildCfg.Name)
+	return nil, errBuildNotFound(buildCfg.Name, projCfg.Name)
 }
