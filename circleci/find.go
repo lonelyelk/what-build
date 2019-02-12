@@ -58,7 +58,11 @@ func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []
 	client := http.Client{
 		Timeout: 10 * time.Second,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return errStatus(req.URL)
+			var r = req
+			if len(via) > 0 {
+				r = via[len(via)-1]
+			}
+			return errStatus(r.URL)
 		},
 	}
 	res, err := client.Do(req)

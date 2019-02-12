@@ -33,7 +33,7 @@ type Build struct {
 
 // Config contains projects and builds along with settings for the crawler
 type Config struct {
-	Settings Settings  `json:"settings"`
+	Settings `json:"settings"`
 	Projects []Project `json:"projects"`
 	Builds   []Build   `json:"builds"`
 }
