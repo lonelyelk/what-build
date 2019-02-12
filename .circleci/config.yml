@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-pkg-cache
+
+      - run: go get -v -t -d ./...
+      - run: go test -v ./...
+
+      - save_cache:
+          key: v1-pkg-cache
+          paths:
+            - "/go/pkg"
