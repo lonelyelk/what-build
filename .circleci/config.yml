@@ -12,7 +12,9 @@ jobs:
             - v1-pkg-cache
 
       - run: go get -v -t -d ./...
-      - run: go test -v ./...
+      - run: make lint
+      - run: make test
+      - run: make build
 
       - save_cache:
           key: v1-pkg-cache
