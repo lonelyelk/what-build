@@ -90,11 +90,9 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
-- [x] Add License
-- [x] Tests
-- [x] CI
-- [x] Trigger build with params
 - [ ] Add options to build parameters to trigger
-- [x] Add user from AWS IAM to deploy parameters
-- [x] List available things with info
+- [ ] List available things with info
 - [ ] Dependencies lock
+- [ ] Implement better login-password github authentication
+- [ ] Refactor API clients
+- [ ] More tests
