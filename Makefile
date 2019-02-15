@@ -17,4 +17,4 @@ lint:
 	if [[ ${cyclocmd} -ne 0 ]] ;then echo "Cyclomatic complexity over threshold:" && gocyclo -over $(cyclomax) . && exit 1; fi
 
 test:
-	go test ./...
+	go test ./... -cover
