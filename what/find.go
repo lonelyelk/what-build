@@ -2,6 +2,7 @@ package what
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/fatih/color"
@@ -27,10 +28,15 @@ func PrintBuild(buildName string, ciBuild *circleci.CIBuildResponse) {
 	if ciBuild.Status == "failed" {
 		ifColor = color.FgRed
 	}
-	fmt.Printf("  Build %s status %s", sprintBuild(buildName), color.New(ifColor).Sprint(ciBuild.Status))
+	var b strings.Builder
+	fmt.Fprintf(&b, "  Build %s status %s", sprintBuild(buildName), color.New(ifColor).Sprint(ciBuild.Status))
 	if ciBuild.StopTime != "" {
-		fmt.Printf(" at %s\n", timeString(ciBuild.StopTime))
+		fmt.Fprintf(&b, fmt.Sprintf(" at %s", timeString(ciBuild.StopTime)))
 	}
+	if user, ok := ciBuild.BuildParameters["IAM_USER"]; ok {
+		fmt.Fprintf(&b, fmt.Sprintf(" by %s", user.(string)))
+	}
+	fmt.Println(b.String())
 	ifColor = color.FgYellow
 	if ciBuild.Branch == "master" || ciBuild.Branch == "staging" || ciBuild.Branch == "develop" {
 		ifColor = color.FgGreen

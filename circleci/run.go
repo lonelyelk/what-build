@@ -3,7 +3,6 @@ package circleci
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -39,7 +38,7 @@ func TriggerBuildRequest(url string, token string, params aws.BuildParameters) (
 }
 
 // TriggerBuildDo makes a POST request to a URL from project config to trigger Circle CI build
-func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build) (build *CIBuildResponse, err error) {
+func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build) (build CIBuildResponse, err error) {
 	if projectConfig.CircleCIToken == "" {
 		var token string
 		token, err = aws.GetSSMParameter(projectConfig.CircleCITokenSSMName)
@@ -71,11 +70,10 @@ func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build) (build *CIB
 		return
 	}
 	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		fmt.Println(res.StatusCode)
+	if res.StatusCode != 201 {
 		return build, errStatus(req.URL)
 	}
-	err = json.NewDecoder(res.Body).Decode(build)
+	err = json.NewDecoder(res.Body).Decode(&build)
 	return
 }
 
@@ -85,5 +83,5 @@ func RunBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, erro
 	if err != nil {
 		return nil, err
 	}
-	return cib, nil
+	return &cib, nil
 }

@@ -2,16 +2,63 @@ package what
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/manifoldco/promptui"
 
 	"github.com/lonelyelk/what-build/aws"
 	"github.com/lonelyelk/what-build/circleci"
 )
 
+func findOrPromptProject(p string, ps *[]aws.Project) (projCfg *aws.Project) {
+	projCfg = aws.FindProject(p, ps)
+	if projCfg == nil {
+		names := make([]string, len(*ps))
+		for i, pc := range *ps {
+			names[i] = pc.Name
+		}
+		prompt := promptui.Select{
+			Label: "Select a project",
+			Items: names,
+		}
+		_, name, err := prompt.Run()
+
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		return aws.FindProject(name, ps)
+	}
+	return
+}
+
+func findOrPromptBuild(b string, bs *[]aws.Build) (buildCfg *aws.Build) {
+	buildCfg = aws.FindBuild(b, bs)
+	if buildCfg == nil {
+		names := make([]string, len(*bs))
+		for i, bc := range *bs {
+			names[i] = bc.Name
+		}
+		prompt := promptui.Select{
+			Label: "Select a build",
+			Items: names,
+		}
+		_, name, err := prompt.Run()
+
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		return aws.FindBuild(name, bs)
+	}
+	return
+}
+
 // Run triggers CircleCI build of given project with run params of given build config
 func Run(project string, build string) {
 	config := aws.GetRemoteConfig()
-	projCfg := aws.FindProject(project, &config.Projects)
-	buildCfg := aws.FindBuild(build, &config.Builds)
+	projCfg := findOrPromptProject(project, &config.Projects)
+	buildCfg := findOrPromptBuild(build, &config.Builds)
 
 	ciBuild, err := circleci.RunBuild(projCfg, buildCfg)
 	if err != nil {
