@@ -13,16 +13,16 @@ import (
 
 // CIBuildResponse is a JSON extraits for build entity on circleci
 type CIBuildResponse struct {
-	BuildNum        int                    `json:"build_num"`
-	Branch          string                 `json:"branch"`
-	VcsRevision     string                 `json:"vcs_revision"`
-	Subject         string                 `json:"subject"`
-	Why             string                 `json:"why"`
-	DontBuild       string                 `json:"dont_build"`
-	StopTime        string                 `json:"stop_time"`
-	BuildTimeMillis int                    `json:"build_time_millis"`
-	Status          string                 `json:"status"`
-	BuildParameters map[string]interface{} `json:"build_parameters"`
+	BuildNum        int                 `json:"build_num"`
+	Branch          string              `json:"branch"`
+	VcsRevision     string              `json:"vcs_revision"`
+	Subject         string              `json:"subject"`
+	Why             string              `json:"why"`
+	DontBuild       string              `json:"dont_build"`
+	StopTime        string              `json:"stop_time"`
+	BuildTimeMillis int                 `json:"build_time_millis"`
+	Status          string              `json:"status"`
+	BuildParameters aws.BuildParameters `json:"build_parameters"`
 }
 
 func errStatus(url *url.URL) error {
@@ -91,7 +91,7 @@ func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []
 }
 
 // FindByBuildParameters returns the first build where searched parameters have the same values
-func FindByBuildParameters(builds *[]CIBuildResponse, params map[string]interface{}) *CIBuildResponse {
+func FindByBuildParameters(builds *[]CIBuildResponse, params aws.BuildParameters) *CIBuildResponse {
 	for _, cib := range *builds {
 		if cib.BuildParameters == nil {
 			continue

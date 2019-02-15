@@ -19,6 +19,9 @@ type Settings struct {
 	MaxOffset int `json:"max_offset"`
 }
 
+// BuildParameters is a type of generic parameters map
+type BuildParameters map[string]interface{}
+
 // Project contains info to fetch builds from CircleCI
 type Project struct {
 	Name                 string `json:"name"`
@@ -29,8 +32,9 @@ type Project struct {
 
 // Build contains search conditions and identification
 type Build struct {
-	Name                  string                 `json:"name"`
-	SearchBuildParameters map[string]interface{} `json:"search_build_parameters"`
+	Name                  string          `json:"name"`
+	SearchBuildParameters BuildParameters `json:"search_build_parameters"`
+	RunBuildParameters    BuildParameters `json:"run_build_parameters"`
 }
 
 // Config contains projects and builds along with settings for the crawler
