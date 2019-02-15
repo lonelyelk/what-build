@@ -85,7 +85,6 @@ func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []
 	if res.StatusCode != 200 {
 		return builds, errStatus(req.URL)
 	}
-	builds = make([]CIBuildResponse, 0)
 	err = json.NewDecoder(res.Body).Decode(&builds)
 	return
 }

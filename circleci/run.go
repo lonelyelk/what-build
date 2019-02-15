@@ -3,7 +3,9 @@ package circleci
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/lonelyelk/what-build/aws"
@@ -23,7 +25,7 @@ func TriggerBuildRequest(url string, token string, params aws.BuildParameters) (
 		return nil, err
 	}
 
-	req, err = http.NewRequest("POST", url+"/tree/develop", bytes.NewReader(b))
+	req, err = http.NewRequest("POST", url, bytes.NewReader(b))
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +40,7 @@ func TriggerBuildRequest(url string, token string, params aws.BuildParameters) (
 }
 
 // TriggerBuildDo makes a POST request to a URL from project config to trigger Circle CI build
-func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build) (build CIBuildResponse, err error) {
+func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build, branch string) (build CIBuildResponse, err error) {
 	if projectConfig.CircleCIToken == "" {
 		var token string
 		token, err = aws.GetSSMParameter(projectConfig.CircleCITokenSSMName)
@@ -51,7 +53,15 @@ func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build) (build CIBu
 		}
 		projectConfig.CircleCIToken = token
 	}
-	req, err := TriggerBuildRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, buildCfg.RunBuildParameters)
+	var b strings.Builder
+	fmt.Fprint(&b, projectConfig.CircleCIURL)
+	if projectConfig.CircleCIURL[len(projectConfig.CircleCIURL)-1] == '/' {
+		fmt.Fprint(&b, "tree/")
+	} else {
+		fmt.Fprint(&b, "/tree/")
+	}
+	fmt.Fprint(&b, branch)
+	req, err := TriggerBuildRequest(b.String(), projectConfig.CircleCIToken, buildCfg.RunBuildParameters)
 	if err != nil {
 		return
 	}
@@ -78,8 +88,8 @@ func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build) (build CIBu
 }
 
 // RunBuild looks for a build in CircleCI
-func RunBuild(projCfg *aws.Project, buildCfg *aws.Build) (*CIBuildResponse, error) {
-	cib, err := TriggerBuildDo(projCfg, buildCfg)
+func RunBuild(projCfg *aws.Project, buildCfg *aws.Build, branch string) (*CIBuildResponse, error) {
+	cib, err := TriggerBuildDo(projCfg, buildCfg, branch)
 	if err != nil {
 		return nil, err
 	}

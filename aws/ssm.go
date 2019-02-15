@@ -28,6 +28,8 @@ type Project struct {
 	CircleCIURL          string `json:"circleci_url"`
 	CircleCIToken        string `json:"circleci_token"`
 	CircleCITokenSSMName string `json:"circleci_token_ssm_name"`
+	GitHubURL            string `json:"github_url"`
+	GitHubToken          string `json:"github_token"`
 }
 
 // Build contains search conditions and identification

@@ -8,6 +8,7 @@ import (
 
 	"github.com/lonelyelk/what-build/aws"
 	"github.com/lonelyelk/what-build/circleci"
+	"github.com/lonelyelk/what-build/github"
 )
 
 func findOrPromptProject(p string, ps *[]aws.Project) (projCfg *aws.Project) {
@@ -59,8 +60,13 @@ func Run(project string, build string) {
 	config := aws.GetRemoteConfig()
 	projCfg := findOrPromptProject(project, &config.Projects)
 	buildCfg := findOrPromptBuild(build, &config.Builds)
+	branch, err := github.ListAndPromptBranch(projCfg)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	ciBuild, err := circleci.RunBuild(projCfg, buildCfg)
+	ciBuild, err := circleci.RunBuild(projCfg, buildCfg, branch)
 	if err != nil {
 		fmt.Println(err)
 		return
