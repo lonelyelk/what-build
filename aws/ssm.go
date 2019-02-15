@@ -20,9 +20,10 @@ type Settings struct {
 
 // Project contains info to fetch builds from CircleCI
 type Project struct {
-	Name          string `json:"name"`
-	CircleCIURL   string `json:"circleci_url"`
-	CircleCIToken string `json:"circleci_token"`
+	Name                 string `json:"name"`
+	CircleCIURL          string `json:"circleci_url"`
+	CircleCIToken        string `json:"circleci_token"`
+	CircleCITokenSSMName string `json:"circleci_token_ssm_name"`
 }
 
 // Build contains search conditions and identification
@@ -48,9 +49,9 @@ func GetRemoteConfig() *Config {
 	return readConfig()
 }
 
-func readConfig() *Config {
+// GetSSMParameter fetches a parameter by name from configured region
+func GetSSMParameter(name string) (string, error) {
 	region := viper.GetString("aws_region")
-	ssmPath := viper.GetString("aws_ssm_configuration")
 	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(region)}))
 	// iamc := iam.New(session)
 	// userOut, err := iamc.GetUser(&iam.GetUserInput{})
@@ -58,15 +59,23 @@ func readConfig() *Config {
 	// 	fmt.Println(err)
 	// }
 	// fmt.Println(userOut)
-	paramIn := ssm.GetParameterInput{Name: aws.String(ssmPath)}
+	paramIn := ssm.GetParameterInput{Name: aws.String(name), WithDecryption: aws.Bool(true)}
 	ssmc := ssm.New(session)
 	paramOut, err := ssmc.GetParameter(&paramIn)
+	if err != nil {
+		return "", err
+	}
+	return *paramOut.Parameter.Value, nil
+}
+
+func readConfig() *Config {
+	cfg, err := GetSSMParameter(viper.GetString("aws_ssm_configuration"))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	remoteConfig = &Config{}
-	json.NewDecoder(strings.NewReader(*paramOut.Parameter.Value)).Decode(remoteConfig)
+	json.NewDecoder(strings.NewReader(cfg)).Decode(remoteConfig)
 	if len(remoteConfig.Builds) == 0 || len(remoteConfig.Builds) == 0 {
 		fmt.Println("Error reading SSM config")
 		os.Exit(1)
