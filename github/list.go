@@ -1,13 +1,10 @@
 package github
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
-	"net/url"
-	"time"
 
+	"github.com/lonelyelk/what-build/api"
 	"github.com/lonelyelk/what-build/aws"
 	"github.com/manifoldco/promptui"
 )
@@ -24,13 +21,6 @@ type GHPRResponse struct {
 	Head  `json:"head"`
 }
 
-func errStatus(url *url.URL) error {
-	return fmt.Errorf("circleci: project url '%s://%s%s' doesn't exist", url.Scheme, url.Host, url.Path)
-}
-func errBuildNotFound(buildName string, projectName string) error {
-	return fmt.Errorf("circleci: build '%s' not found for project '%s'", buildName, projectName)
-}
-
 // ListPRsRequest constructs and returns GitHub API based request for listing pull requests
 func ListPRsRequest(url string, token string) (req *http.Request, err error) {
 	req, err = http.NewRequest("GET", url, nil)
@@ -41,8 +31,6 @@ func ListPRsRequest(url string, token string) (req *http.Request, err error) {
 	q := req.URL.Query()
 	q.Add("access_token", token)
 	req.URL.RawQuery = q.Encode()
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("User-Agent", "lonelyelk-what-build-bot")
 	return
 }
 
@@ -52,25 +40,7 @@ func ListPRsDo(projectConfig *aws.Project) (prs []GHPRResponse, err error) {
 	if err != nil {
 		return
 	}
-	client := http.Client{
-		Timeout: 10 * time.Second,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			var r = req
-			if len(via) > 0 {
-				r = via[len(via)-1]
-			}
-			return errStatus(r.URL)
-		},
-	}
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		return prs, errStatus(req.URL)
-	}
-	err = json.NewDecoder(res.Body).Decode(&prs)
+	err = api.NoRedirectClientDo(req, &prs)
 	return
 }
 

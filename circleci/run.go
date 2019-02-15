@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
+	"github.com/lonelyelk/what-build/api"
 	"github.com/lonelyelk/what-build/aws"
 )
 
@@ -33,9 +33,6 @@ func TriggerBuildRequest(url string, token string, params aws.BuildParameters) (
 	q := req.URL.Query()
 	q.Add("circle-token", token)
 	req.URL.RawQuery = q.Encode()
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("User-Agent", "lonelyelk-what-build-bot")
 	return
 }
 
@@ -65,25 +62,7 @@ func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build, branch stri
 	if err != nil {
 		return
 	}
-	client := http.Client{
-		Timeout: 10 * time.Second,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			var r = req
-			if len(via) > 0 {
-				r = via[len(via)-1]
-			}
-			return errStatus(r.URL)
-		},
-	}
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 201 {
-		return build, errStatus(req.URL)
-	}
-	err = json.NewDecoder(res.Body).Decode(&build)
+	err = api.NoRedirectClientDo(req, &build)
 	return
 }
 

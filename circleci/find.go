@@ -1,13 +1,11 @@
 package circleci
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
-	"time"
 
+	"github.com/lonelyelk/what-build/api"
 	"github.com/lonelyelk/what-build/aws"
 )
 
@@ -25,9 +23,6 @@ type CIBuildResponse struct {
 	BuildParameters aws.BuildParameters `json:"build_parameters"`
 }
 
-func errStatus(url *url.URL) error {
-	return fmt.Errorf("circleci: project url '%s://%s%s' doesn't exist", url.Scheme, url.Host, url.Path)
-}
 func errBuildNotFound(buildName string, projectName string) error {
 	return fmt.Errorf("circleci: build '%s' not found for project '%s'", buildName, projectName)
 }
@@ -43,8 +38,6 @@ func FetchBuildsRequest(url string, token string, limit int, offset int) (req *h
 	q.Add("circle-token", token)
 	q.Add("limit", strconv.Itoa(limit))
 	q.Add("offset", strconv.Itoa(offset))
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("User-Agent", "lonelyelk-what-build-bot")
 	req.URL.RawQuery = q.Encode()
 	return
 }
@@ -67,25 +60,7 @@ func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []
 	if err != nil {
 		return
 	}
-	client := http.Client{
-		Timeout: 10 * time.Second,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			var r = req
-			if len(via) > 0 {
-				r = via[len(via)-1]
-			}
-			return errStatus(r.URL)
-		},
-	}
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		return builds, errStatus(req.URL)
-	}
-	err = json.NewDecoder(res.Body).Decode(&builds)
+	err = api.NoRedirectClientDo(req, &builds)
 	return
 }
 
