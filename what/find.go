@@ -17,7 +17,8 @@ func timeString(str string) string {
 	return t.In(time.Local).Format("15:04 02.01.2006")
 }
 
-func printBuild(buildName string, ciBuild *circleci.CIBuildResponse) {
+// PrintBuild prints Circle CI build in beautiful colors
+func PrintBuild(buildName string, ciBuild *circleci.CIBuildResponse) {
 	sprintBuild := color.New(color.FgCyan, color.Bold).SprintFunc()
 	ifColor := color.FgYellow
 	if ciBuild.Status == "success" {
@@ -53,7 +54,7 @@ func Find(projects []string, builds []string) {
 				fmt.Println(err)
 				break
 			}
-			printBuild(buildCfg.Name, ciBuild)
+			PrintBuild(buildCfg.Name, ciBuild)
 		}
 	}
 }

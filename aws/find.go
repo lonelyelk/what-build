@@ -9,6 +9,16 @@ func appendBuild(selection *[]Build, name string, builds *[]Build) {
 	}
 }
 
+// FindBuild looks for a build by name in a provided slice
+func FindBuild(name string, builds *[]Build) *Build {
+	for _, b := range *builds {
+		if b.Name == name {
+			return &b
+		}
+	}
+	return nil
+}
+
 // FindBuilds looks for builds in SSM config by names
 func FindBuilds(names []string, builds *[]Build) []Build {
 	var buildCfgs []Build
@@ -33,6 +43,16 @@ func appendProject(selection *[]Project, name string, projects *[]Project) {
 			return
 		}
 	}
+}
+
+// FindProject looks for a project by name in the provided slice
+func FindProject(name string, projects *[]Project) *Project {
+	for _, p := range *projects {
+		if p.Name == name {
+			return &p
+		}
+	}
+	return nil
 }
 
 // FindProjects looks for projects in SSM config by names

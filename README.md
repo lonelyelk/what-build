@@ -19,9 +19,12 @@ go get github.com/lonelyelk/what-build
 Available Commands:
   find        find a build of a project
   help        Help about any command
+  run         run a build of a project
+  version     version of what-build tool
 
 Flags:
   -h, --help   help for what-build
+  -v, --version   output version
 
 Use "what-build [command] --help" for more information about a command.
 ```
@@ -43,12 +46,14 @@ The parameter is expected to contain a json string with projects and builds info
         {
             "name": "proj1",
             "circleci_url": "https://circleci.com/api/v1.1/project/...",
-            "circleci_token": "token_for_project"
+            "circleci_token": "token_for_project",
+            "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter"
         },
         {
             "name": "proj2",
             "circleci_url": "https://circleci.com/api/v1.1/project/...",
-            "circleci_token": "token_for_project"
+            "circleci_token": "token_for_project",
+            "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter"
         }
     ],
     "builds": [
@@ -57,11 +62,20 @@ The parameter is expected to contain a json string with projects and builds info
             "search_build_parameters": {
                 "SOME_ENV": "superprod",
                 "SOME_VAR": "true"
+            },
+            "run_build_parameters": {
+                "SOME_ENV": "superprod",
+                "SOME_VAR": "true",
+                "SOME_ELSE": "a"
             }
         },
         {
             "name": "build2",
             "search_build_parameters": {
+                "SOME_ENV": "QA999",
+                "SOME_OTHER_VAR": "false"
+            },
+            "run_build_parameters": {
                 "SOME_ENV": "QA999",
                 "SOME_OTHER_VAR": "false"
             }
@@ -75,8 +89,8 @@ The parameter is expected to contain a json string with projects and builds info
 - [x] Add License
 - [x] Tests
 - [x] CI
-- [ ] Trigger build with params
+- [x] Trigger build with params
 - [ ] Add options to build parameters to trigger
-- [ ] Add user from AWS IAM to deploy parameters
+- [x] Add user from AWS IAM to deploy parameters
 - [ ] List available things with info
 - [ ] Dependencies lock

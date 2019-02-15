@@ -39,20 +39,20 @@ type Build struct {
 
 // Config contains projects and builds along with settings for the crawler
 type Config struct {
-	Settings    `json:"settings"`
-	Projects    []Project `json:"projects"`
-	Builds      []Build   `json:"builds"`
-	IAMUserName string
+	Settings `json:"settings"`
+	Projects []Project `json:"projects"`
+	Builds   []Build   `json:"builds"`
 }
 
 var remoteConfig *Config
+var iamUserName string
 
 // GetRemoteConfig returns cached config from SSM or fetches one
 func GetRemoteConfig() *Config {
 	if remoteConfig != nil {
 		return remoteConfig
 	}
-	return readConfig()
+	return fetchConfig()
 }
 
 // GetSSMParameter fetches a parameter by name from configured region
@@ -69,18 +69,27 @@ func GetSSMParameter(name string) (string, error) {
 }
 
 // GetIAMUserName returns current IAM user name
-func GetIAMUserName() (string, error) {
+func GetIAMUserName() string {
+	if iamUserName != "" {
+		return iamUserName
+	}
+	return fetchIAMUserName()
+}
+
+func fetchIAMUserName() string {
 	region := viper.GetString("aws_region")
 	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(region)}))
 	iamc := iam.New(session)
 	userOut, err := iamc.GetUser(&iam.GetUserInput{})
 	if err != nil {
-		return "", err
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	return *userOut.User.UserName, nil
+	iamUserName = *userOut.User.UserName
+	return iamUserName
 }
 
-func readConfig() *Config {
+func fetchConfig() *Config {
 	cfg, err := GetSSMParameter(viper.GetString("aws_ssm_configuration"))
 	if err != nil {
 		fmt.Println(err)
@@ -92,11 +101,5 @@ func readConfig() *Config {
 		fmt.Println("Error reading SSM config")
 		os.Exit(1)
 	}
-	name, err := GetIAMUserName()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	remoteConfig.IAMUserName = name
 	return remoteConfig
 }
