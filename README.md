@@ -3,6 +3,8 @@
 A project created as an excercise to learn some Go for the Greater Good. Idea conceved as a help to
 coordinate QA process.
 
+[![CircleCI](https://circleci.com/gh/lonelyelk/what-build.svg?style=svg)](https://circleci.com/gh/lonelyelk/what-build)
+
 ## Installation
 
 Assuming Go installed and $GOPATH/bin is added to $PATH
