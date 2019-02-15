@@ -47,13 +47,17 @@ The parameter is expected to contain a json string with projects and builds info
             "name": "proj1",
             "circleci_url": "https://circleci.com/api/v1.1/project/...",
             "circleci_token": "token_for_project",
-            "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter"
+            "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter",
+            "github_url": "https://api.github.com/repos/.../pulls",
+            "github_token": "token_for_project"
         },
         {
             "name": "proj2",
             "circleci_url": "https://circleci.com/api/v1.1/project/...",
             "circleci_token": "token_for_project",
-            "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter"
+            "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter",
+            "github_url": "https://api.github.com/repos/.../pulls",
+            "github_token": "token_for_project"
         }
     ],
     "builds": [
@@ -92,5 +96,5 @@ The parameter is expected to contain a json string with projects and builds info
 - [x] Trigger build with params
 - [ ] Add options to build parameters to trigger
 - [x] Add user from AWS IAM to deploy parameters
-- [ ] List available things with info
+- [x] List available things with info
 - [ ] Dependencies lock
