@@ -90,6 +90,7 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
+- [ ] Replace strings.Builder or newer golang version on CI
 - [ ] Add options to build parameters to trigger
 - [ ] List available things with info
 - [ ] Dependencies lock
