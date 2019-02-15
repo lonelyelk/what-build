@@ -29,7 +29,7 @@ func errStatus(url *url.URL) error {
 	return fmt.Errorf("circleci: project url '%s://%s%s' doesn't exist", url.Scheme, url.Host, url.Path)
 }
 func errBuildNotFound(buildName string, projectName string) error {
-	return fmt.Errorf("circleci: build '%s' not found fpr project '%s'", buildName, projectName)
+	return fmt.Errorf("circleci: build '%s' not found for project '%s'", buildName, projectName)
 }
 
 // FetchBuildsRequest constructs and returns CircleCI API based request for builds

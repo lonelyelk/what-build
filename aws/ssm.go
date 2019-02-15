@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/spf13/viper"
 )
@@ -34,9 +35,10 @@ type Build struct {
 
 // Config contains projects and builds along with settings for the crawler
 type Config struct {
-	Settings `json:"settings"`
-	Projects []Project `json:"projects"`
-	Builds   []Build   `json:"builds"`
+	Settings    `json:"settings"`
+	Projects    []Project `json:"projects"`
+	Builds      []Build   `json:"builds"`
+	IAMUserName string
 }
 
 var remoteConfig *Config
@@ -53,12 +55,6 @@ func GetRemoteConfig() *Config {
 func GetSSMParameter(name string) (string, error) {
 	region := viper.GetString("aws_region")
 	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(region)}))
-	// iamc := iam.New(session)
-	// userOut, err := iamc.GetUser(&iam.GetUserInput{})
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(userOut)
 	paramIn := ssm.GetParameterInput{Name: aws.String(name), WithDecryption: aws.Bool(true)}
 	ssmc := ssm.New(session)
 	paramOut, err := ssmc.GetParameter(&paramIn)
@@ -66,6 +62,18 @@ func GetSSMParameter(name string) (string, error) {
 		return "", err
 	}
 	return *paramOut.Parameter.Value, nil
+}
+
+// GetIAMUserName returns current IAM user name
+func GetIAMUserName() (string, error) {
+	region := viper.GetString("aws_region")
+	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(region)}))
+	iamc := iam.New(session)
+	userOut, err := iamc.GetUser(&iam.GetUserInput{})
+	if err != nil {
+		return "", err
+	}
+	return *userOut.User.UserName, nil
 }
 
 func readConfig() *Config {
@@ -80,5 +88,11 @@ func readConfig() *Config {
 		fmt.Println("Error reading SSM config")
 		os.Exit(1)
 	}
+	name, err := GetIAMUserName()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	remoteConfig.IAMUserName = name
 	return remoteConfig
 }
