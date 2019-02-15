@@ -11,7 +11,7 @@ jobs:
           keys:
             - v1-pkg-cache
 
-      - run: go get -v -t -d ./...
+      - run: make dep
       - run: make lint
       - run: make test
       - run: make build

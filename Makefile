@@ -18,3 +18,6 @@ lint:
 
 test:
 	go test ./... -cover
+
+dep:
+	go get -v -t -d ./...
