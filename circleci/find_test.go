@@ -19,9 +19,6 @@ func TestFetchBuildsRequest(t *testing.T) {
 	if req.URL.RawQuery != "circle-token=some_token&limit=10&offset=20" {
 		t.Errorf("Expected '%s' to be 'circle-token=some_token&limit=10&offset=20'", req.URL.RawQuery)
 	}
-	if req.Header.Get("Accept") != "application/json" {
-		t.Errorf("Expected request to have 'Accept application/json' header")
-	}
 }
 
 func TestFindByBuildParameters(t *testing.T) {
