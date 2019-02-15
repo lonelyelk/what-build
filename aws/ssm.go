@@ -78,6 +78,21 @@ func GetIAMUserName() string {
 	return fetchIAMUserName()
 }
 
+// FetchTokenIfMissing gets project token from SSM if SSM name is present but token is not, updates project
+func FetchTokenIfMissing(p *Project) {
+	if p.CircleCIToken == "" {
+		token, err := GetSSMParameter(p.CircleCITokenSSMName)
+		if err != nil {
+			return
+		}
+		// Account for post request prepared token like 'token:' as if it was user with no password
+		if token[len(token)-1] == ':' {
+			token = token[:len(token)-1]
+		}
+		p.CircleCIToken = token
+	}
+}
+
 func fetchIAMUserName() string {
 	region := viper.GetString("aws_region")
 	session := session.Must(session.NewSession(&aws.Config{Region: aws.String(region)}))

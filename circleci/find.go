@@ -43,20 +43,9 @@ func FetchBuildsRequest(url string, token string, limit int, offset int) (req *h
 }
 
 // FetchBuildsDo makes a request to a URL from project config to fetch Circle CI builds with limit and offset
-func FetchBuildsDo(projectConfig *aws.Project, limit int, offset int) (builds []CIBuildResponse, err error) {
-	if projectConfig.CircleCIToken == "" {
-		var token string
-		token, err = aws.GetSSMParameter(projectConfig.CircleCITokenSSMName)
-		if err != nil {
-			return
-		}
-		// Account for post request prepared token like 'token:' as if it was user with no password
-		if token[len(token)-1] == ':' {
-			token = token[:len(token)-1]
-		}
-		projectConfig.CircleCIToken = token
-	}
-	req, err := FetchBuildsRequest(projectConfig.CircleCIURL, projectConfig.CircleCIToken, limit, offset)
+func FetchBuildsDo(projConfig *aws.Project, limit int, offset int) (builds []CIBuildResponse, err error) {
+	aws.FetchTokenIfMissing(projConfig)
+	req, err := FetchBuildsRequest(projConfig.CircleCIURL, projConfig.CircleCIToken, limit, offset)
 	if err != nil {
 		return
 	}

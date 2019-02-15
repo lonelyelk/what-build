@@ -37,28 +37,17 @@ func TriggerBuildRequest(url string, token string, params aws.BuildParameters) (
 }
 
 // TriggerBuildDo makes a POST request to a URL from project config to trigger Circle CI build
-func TriggerBuildDo(projectConfig *aws.Project, buildCfg *aws.Build, branch string) (build CIBuildResponse, err error) {
-	if projectConfig.CircleCIToken == "" {
-		var token string
-		token, err = aws.GetSSMParameter(projectConfig.CircleCITokenSSMName)
-		if err != nil {
-			return
-		}
-		// Account for post request prepared token like 'token:' as if it was user with no password
-		if token[len(token)-1] == ':' {
-			token = token[:len(token)-1]
-		}
-		projectConfig.CircleCIToken = token
-	}
+func TriggerBuildDo(projConfig *aws.Project, buildCfg *aws.Build, branch string) (build CIBuildResponse, err error) {
+	aws.FetchTokenIfMissing(projConfig)
 	var b strings.Builder
-	fmt.Fprint(&b, projectConfig.CircleCIURL)
-	if projectConfig.CircleCIURL[len(projectConfig.CircleCIURL)-1] == '/' {
+	fmt.Fprint(&b, projConfig.CircleCIURL)
+	if projConfig.CircleCIURL[len(projConfig.CircleCIURL)-1] == '/' {
 		fmt.Fprint(&b, "tree/")
 	} else {
 		fmt.Fprint(&b, "/tree/")
 	}
 	fmt.Fprint(&b, branch)
-	req, err := TriggerBuildRequest(b.String(), projectConfig.CircleCIToken, buildCfg.RunBuildParameters)
+	req, err := TriggerBuildRequest(b.String(), projConfig.CircleCIToken, buildCfg.RunBuildParameters)
 	if err != nil {
 		return
 	}
