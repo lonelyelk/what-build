@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/lonelyelk/what-build.svg?style=svg)](https://circleci.com/gh/lonelyelk/what-build)
+[![Build Status](https://travis-ci.org/lonelyelk/what-build.svg?branch=master)](https://travis-ci.org/lonelyelk/what-build)
 
 # what-build
 
