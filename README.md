@@ -1,9 +1,9 @@
+[![CircleCI](https://circleci.com/gh/lonelyelk/what-build.svg?style=svg)](https://circleci.com/gh/lonelyelk/what-build)
+
 # what-build
 
 A project created as an excercise to learn some Go for the Greater Good. Idea conceved as a help to
 coordinate QA process.
-
-[![CircleCI](https://circleci.com/gh/lonelyelk/what-build.svg?style=svg)](https://circleci.com/gh/lonelyelk/what-build)
 
 ## Installation
 
@@ -97,5 +97,5 @@ The parameter is expected to contain a json string with projects and builds info
 - [ ] List available things with info
 - [ ] Dependencies lock
 - [ ] Implement better login-password github authentication
-- [ ] Refactor API clients
-- [ ] More tests
+- [x] Refactor API clients
+- [ ] More tests available if rewrite in more functional way
