@@ -56,17 +56,7 @@ func FetchBuildsDo(projConfig *aws.Project, limit int, offset int) (builds []CIB
 // FindByBuildParameters returns the first build where searched parameters have the same values
 func FindByBuildParameters(builds *[]CIBuildResponse, params aws.BuildParameters) *CIBuildResponse {
 	for _, cib := range *builds {
-		if cib.BuildParameters == nil {
-			continue
-		}
-		match := true
-		for key, value := range params {
-			if cib.BuildParameters[key] != value {
-				match = false
-				break
-			}
-		}
-		if match {
+		if params.SatisfiedBy(cib.BuildParameters) {
 			return &cib
 		}
 	}

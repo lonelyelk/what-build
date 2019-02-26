@@ -22,7 +22,7 @@ func TestFetchBuildsRequest(t *testing.T) {
 }
 
 func TestFindByBuildParameters(t *testing.T) {
-	searchParams := map[string]interface{}{
+	searchParams := aws.BuildParameters{
 		"some_param":  "some_value",
 		"other_param": "other_value",
 	}
@@ -32,14 +32,14 @@ func TestFindByBuildParameters(t *testing.T) {
 		},
 		{
 			BuildNum: 1,
-			BuildParameters: map[string]interface{}{
+			BuildParameters: aws.BuildParameters{
 				"q":          2,
 				"some_param": "some_value",
 			},
 		},
 		{
 			BuildNum: 2,
-			BuildParameters: map[string]interface{}{
+			BuildParameters: aws.BuildParameters{
 				"other_param": "other_value",
 				"some_param":  "some_value",
 				"yet_another": false,
@@ -47,7 +47,7 @@ func TestFindByBuildParameters(t *testing.T) {
 		},
 		{
 			BuildNum: 3,
-			BuildParameters: map[string]interface{}{
+			BuildParameters: aws.BuildParameters{
 				"some_param":  "some_value",
 				"other_param": "other_value",
 			},
@@ -63,14 +63,14 @@ func TestFindByBuildParameters(t *testing.T) {
 }
 
 func TestFindByBuildParameters_NotFound(t *testing.T) {
-	searchParams := map[string]interface{}{
+	searchParams := aws.BuildParameters{
 		"some_param":  "some_value",
 		"other_param": "other_value",
 	}
 	builds := []circleci.CIBuildResponse{
 		{
 			BuildNum: 1,
-			BuildParameters: map[string]interface{}{
+			BuildParameters: aws.BuildParameters{
 				"q":          2,
 				"some_param": "some_value",
 			},

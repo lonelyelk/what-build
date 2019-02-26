@@ -120,3 +120,16 @@ func fetchConfig() *Config {
 	}
 	return remoteConfig
 }
+
+// SatisfiedBy checks if provided map includes all the same values under the same keys as the source
+func (bp BuildParameters) SatisfiedBy(other BuildParameters) bool {
+	if other == nil {
+		return false
+	}
+	for key, value := range bp {
+		if other[key] != value {
+			return false
+		}
+	}
+	return true
+}
