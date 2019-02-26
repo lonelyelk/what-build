@@ -8,8 +8,9 @@ import (
 	"time"
 )
 
-func errStatus(url *url.URL) error {
-	return fmt.Errorf("api: url '%s://%s%s' doesn't succeed", url.Scheme, url.Host, url.Path)
+// ErrStatus formats error with url and status
+func ErrStatus(url *url.URL, status int) error {
+	return fmt.Errorf("api: url '%s://%s%s' returned %d", url.Scheme, url.Host, url.Path, status)
 }
 
 // NoRedirectClientDo performes http request and decodes json
@@ -24,7 +25,7 @@ func NoRedirectClientDo(req *http.Request, decoder interface{}) (err error) {
 			if len(via) > 0 {
 				r = via[len(via)-1]
 			}
-			return errStatus(r.URL)
+			return ErrStatus(r.URL, http.StatusFound)
 		},
 	}
 	res, err := client.Do(req)
@@ -32,8 +33,8 @@ func NoRedirectClientDo(req *http.Request, decoder interface{}) (err error) {
 		return
 	}
 	defer res.Body.Close()
-	if res.StatusCode != 200 && res.StatusCode != 201 {
-		return errStatus(req.URL)
+	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
+		return ErrStatus(req.URL, res.StatusCode)
 	}
 	err = json.NewDecoder(res.Body).Decode(decoder)
 	return
