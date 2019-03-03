@@ -57,14 +57,14 @@ The parameter is expected to contain a json string with projects and builds info
             "circleci_url": "https://circleci.com/api/v1.1/project/...",
             "circleci_token": "token_for_project",
             "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter",
-            "github_url": "https://api.github.com/repos/.../pulls",
+            "github_url": "https://api.github.com/repos/.../pulls"
         },
         {
             "name": "proj2",
             "circleci_url": "https://circleci.com/api/v1.1/project/...",
             "circleci_token": "token_for_project",
             "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter",
-            "github_url": "https://api.github.com/repos/.../pulls",
+            "github_url": "https://api.github.com/repos/.../pulls"
         }
     ],
     "builds": [
