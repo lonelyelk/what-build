@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/lonelyelk/what-build/github"
 	"github.com/lonelyelk/what-build/what"
 
 	"github.com/manifoldco/promptui"
@@ -56,6 +57,11 @@ func initConfig() {
 	}
 	if viper.GetString("aws_ssm_configuration") == "" {
 		promptAndWriteConfig("Enter path for SSM configuration", "aws_ssm_configuration")
+	}
+	err = github.Auth()
+	if err != nil {
+		fmt.Println("Can't request github token:", err)
+		os.Exit(1)
 	}
 }
 

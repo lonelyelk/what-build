@@ -100,3 +100,4 @@ The parameter is expected to contain a json string with projects and builds info
 - [ ] Implement better login-password github authentication
 - [x] Refactor API clients
 - [ ] More tests available if rewrite in more functional way
+- [ ] Allow to deploy from a branch, not only PR

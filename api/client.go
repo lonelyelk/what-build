@@ -34,8 +34,11 @@ func NoRedirectClientDo(req *http.Request, decoder interface{}) (err error) {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
-		return ErrStatus(req.URL, res.StatusCode)
+		err = ErrStatus(req.URL, res.StatusCode)
 	}
-	err = json.NewDecoder(res.Body).Decode(decoder)
+	jsonErr := json.NewDecoder(res.Body).Decode(decoder)
+	if err == nil {
+		return jsonErr
+	}
 	return
 }
