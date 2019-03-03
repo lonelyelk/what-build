@@ -7,6 +7,10 @@ cyclocmd=`gocyclo -over ${cyclomax} . | wc -c`
 build:
 	go build ${flags} -o ./bin/$(binary)
 
+build_all:
+	env GOOS=darwin GOARCH=amd64 go build ${flags} -o ./bin/lgtm-darwin-amd64-$(version)
+	env GOOS=linux GOARCH=amd64 go build ${flags} -o ./bin/lgtm-linux-amd64-$(version)
+
 install:
 	go install ${flags}
 
