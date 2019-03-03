@@ -32,7 +32,13 @@ Flags:
 Use "what-build [command] --help" for more information about a command.
 ```
 
-## Config
+## GitHub authorization
+
+This tool uses [non-web application flow](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#non-web-application-flow) of authentication as suggested by GitHub. If access token is not found in local tool configuration, the user is requested to enter their GitHub credentials to then request a token on behalf of the user.
+
+Generated token can be fount and revoked in [user settings](https://github.com/settings/tokens) under the name of **what-build-access**.
+
+## SSM Config
 
 When running for the first time, the tool looks for configuration in **~/.what-build.yaml** and uses
 it to access AWS Parameter Store and fetch the configuration. It is assumed that the user has AWS
@@ -52,7 +58,6 @@ The parameter is expected to contain a json string with projects and builds info
             "circleci_token": "token_for_project",
             "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter",
             "github_url": "https://api.github.com/repos/.../pulls",
-            "github_token": "token_for_project"
         },
         {
             "name": "proj2",
@@ -60,7 +65,6 @@ The parameter is expected to contain a json string with projects and builds info
             "circleci_token": "token_for_project",
             "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter",
             "github_url": "https://api.github.com/repos/.../pulls",
-            "github_token": "token_for_project"
         }
     ],
     "builds": [
@@ -93,11 +97,10 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
-- [ ] Check if cache is working correctly on CI
 - [ ] Add options to build parameters to trigger
 - [ ] List available things with info
 - [ ] Dependencies lock
-- [ ] Implement better login-password github authentication
+- [x] Implement better login-password github authentication
 - [x] Refactor API clients
-- [ ] More tests available if rewrite in more functional way
 - [ ] Allow to deploy from a branch, not only PR
+- [ ] Permit rerequest/overwrite github token
