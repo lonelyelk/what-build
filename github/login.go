@@ -27,6 +27,8 @@ type Authorization struct {
 	Message string `json:"message"`
 }
 
+const githubTokenConfigName = "github_token"
+
 // GetAuthRequest initializes AuthRequest
 func GetAuthRequest() *AuthRequest {
 	id, err := gonanoid.Nanoid()
@@ -92,7 +94,7 @@ func getToken() (string, error) {
 
 // Auth checks if token exists in local config and requests new one if it doesn't
 func Auth() error {
-	token := viper.GetString("github_token")
+	token := viper.GetString(githubTokenConfigName)
 	if token != "" {
 		return nil
 	}
@@ -100,6 +102,6 @@ func Auth() error {
 	if err != nil {
 		return err
 	}
-	viper.Set("github_token", token)
+	viper.Set(githubTokenConfigName, token)
 	return viper.WriteConfig()
 }

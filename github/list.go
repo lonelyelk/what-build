@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/spf13/viper"
+
 	"github.com/lonelyelk/what-build/api"
 	"github.com/lonelyelk/what-build/aws"
 	"github.com/manifoldco/promptui"
@@ -22,21 +24,21 @@ type GHPRResponse struct {
 }
 
 // ListPRsRequest constructs and returns GitHub API based request for listing pull requests
-func ListPRsRequest(url string, token string) (req *http.Request, err error) {
+func ListPRsRequest(url string) (req *http.Request, err error) {
 	req, err = http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	q := req.URL.Query()
-	q.Add("access_token", token)
+	q.Add("access_token", viper.GetString(githubTokenConfigName))
 	req.URL.RawQuery = q.Encode()
 	return
 }
 
 // ListPRsDo makes a POST request to a URL from project config to trigger Circle CI build
 func ListPRsDo(projectConfig *aws.Project) (prs []GHPRResponse, err error) {
-	req, err := ListPRsRequest(projectConfig.GitHubURL, projectConfig.GitHubToken)
+	req, err := ListPRsRequest(projectConfig.GitHubURL)
 	if err != nil {
 		return
 	}
