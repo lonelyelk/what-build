@@ -24,11 +24,12 @@ type BuildParameters map[string]interface{}
 
 // Project contains info to fetch builds from CircleCI
 type Project struct {
-	Name                 string `json:"name"`
-	CircleCIURL          string `json:"circleci_url"`
-	CircleCIToken        string `json:"circleci_token"`
-	CircleCITokenSSMName string `json:"circleci_token_ssm_name"`
-	GitHubURL            string `json:"github_url"`
+	Name                    string                     `json:"name"`
+	CircleCIURL             string                     `json:"circleci_url"`
+	CircleCIToken           string                     `json:"circleci_token"`
+	CircleCITokenSSMName    string                     `json:"circleci_token_ssm_name"`
+	GitHubURL               string                     `json:"github_url"`
+	OptionalBuildParameters map[string]BuildParameters `json:"optional_build_parameters"`
 }
 
 // Build contains search conditions and identification

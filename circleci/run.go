@@ -37,7 +37,7 @@ func TriggerBuildRequest(url string, token string, params aws.BuildParameters) (
 }
 
 // TriggerBuildDo makes a POST request to a URL from project config to trigger Circle CI build
-func TriggerBuildDo(projConfig *aws.Project, buildCfg *aws.Build, branch string) (build CIBuildResponse, err error) {
+func TriggerBuildDo(projConfig *aws.Project, buildCfg *aws.Build, branch string, extraParams aws.BuildParameters) (build CIBuildResponse, err error) {
 	aws.FetchTokenIfMissing(projConfig)
 	var b strings.Builder
 	fmt.Fprint(&b, projConfig.CircleCIURL)
@@ -47,7 +47,15 @@ func TriggerBuildDo(projConfig *aws.Project, buildCfg *aws.Build, branch string)
 		fmt.Fprint(&b, "/tree/")
 	}
 	fmt.Fprint(&b, branch)
-	req, err := TriggerBuildRequest(b.String(), projConfig.CircleCIToken, buildCfg.RunBuildParameters)
+	var params aws.BuildParameters
+	params = make(aws.BuildParameters)
+	for key, val := range buildCfg.RunBuildParameters {
+		params[key] = val
+	}
+	for key, val := range extraParams {
+		params[key] = val
+	}
+	req, err := TriggerBuildRequest(b.String(), projConfig.CircleCIToken, params)
 	if err != nil {
 		return
 	}
@@ -56,8 +64,8 @@ func TriggerBuildDo(projConfig *aws.Project, buildCfg *aws.Build, branch string)
 }
 
 // RunBuild looks for a build in CircleCI
-func RunBuild(projCfg *aws.Project, buildCfg *aws.Build, branch string) (*CIBuildResponse, error) {
-	cib, err := TriggerBuildDo(projCfg, buildCfg, branch)
+func RunBuild(projCfg *aws.Project, buildCfg *aws.Build, branch string, extraParams aws.BuildParameters) (*CIBuildResponse, error) {
+	cib, err := TriggerBuildDo(projCfg, buildCfg, branch, extraParams)
 	if err != nil {
 		return nil, err
 	}

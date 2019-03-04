@@ -55,6 +55,29 @@ func findOrPromptBuild(b string, bs *[]aws.Build) (buildCfg *aws.Build) {
 	return
 }
 
+func promptOptional(pc *aws.Project) aws.BuildParameters {
+	if len(pc.OptionalBuildParameters) == 0 {
+		return aws.BuildParameters{}
+	}
+	options := []string{"default"}
+	for opt := range pc.OptionalBuildParameters {
+		if opt != "default" {
+			options = append(options, opt)
+		}
+	}
+	prompt := promptui.Select{
+		Label: "Select build options",
+		Items: options,
+	}
+	_, option, err := prompt.Run()
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return pc.OptionalBuildParameters[option]
+}
+
 // Run triggers CircleCI build of given project with run params of given build config
 func Run(project string, build string) {
 	config := aws.GetRemoteConfig()
@@ -65,8 +88,9 @@ func Run(project string, build string) {
 		fmt.Println(err)
 		return
 	}
+	params := promptOptional(projCfg)
 
-	ciBuild, err := circleci.RunBuild(projCfg, buildCfg, branch)
+	ciBuild, err := circleci.RunBuild(projCfg, buildCfg, branch, params)
 	if err != nil {
 		fmt.Println(err)
 		return
