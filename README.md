@@ -110,10 +110,7 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
-- [x] Add options to build parameters to trigger
-- [x] List available things with info
 - [ ] Dependencies lock
-- [x] Implement better login-password github authentication
-- [x] Refactor API clients
 - [ ] Allow to deploy from a branch, not only PR
 - [ ] Permit rerequest/overwrite github token
+- [ ] Permit multiple build runs in one command run
