@@ -22,14 +22,44 @@ type Settings struct {
 // BuildParameters is a type of generic parameters map
 type BuildParameters map[string]interface{}
 
+// StringIndent constructs a string to output BuildParameters with and indent for formatting
+func (params BuildParameters) StringIndent(indent string) string {
+	if params == nil || len(params) == 0 {
+		return fmt.Sprintf("%s-", indent)
+	}
+	arr := make([]string, len(params))
+	count := 0
+	for key, value := range params {
+		arr[count] = fmt.Sprintf("%s%s=%v", indent, key, value)
+		count = count + 1
+	}
+	return strings.Join(arr, "\n")
+}
+
+// OptionalBuildParameters is a map of BuildParameters
+type OptionalBuildParameters map[string]BuildParameters
+
+// StringIndent constructs a string to output OptionalBuildParameters with and indent for formatting
+func (opts OptionalBuildParameters) StringIndent(indent string) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "%sdefault:\n%s", indent, opts["default"].StringIndent(fmt.Sprintf("%s  - ", indent)))
+	for key, value := range opts {
+		if key == "default" {
+			continue
+		}
+		fmt.Fprintf(&b, "\n%s%s:\n%s", indent, key, value.StringIndent(fmt.Sprintf("%s  - ", indent)))
+	}
+	return b.String()
+}
+
 // Project contains info to fetch builds from CircleCI
 type Project struct {
-	Name                    string                     `json:"name"`
-	CircleCIURL             string                     `json:"circleci_url"`
-	CircleCIToken           string                     `json:"circleci_token"`
-	CircleCITokenSSMName    string                     `json:"circleci_token_ssm_name"`
-	GitHubURL               string                     `json:"github_url"`
-	OptionalBuildParameters map[string]BuildParameters `json:"optional_build_parameters"`
+	Name                    string                  `json:"name"`
+	CircleCIURL             string                  `json:"circleci_url"`
+	CircleCIToken           string                  `json:"circleci_token"`
+	CircleCITokenSSMName    string                  `json:"circleci_token_ssm_name"`
+	GitHubURL               string                  `json:"github_url"`
+	OptionalBuildParameters OptionalBuildParameters `json:"optional_build_parameters"`
 }
 
 // Build contains search conditions and identification
