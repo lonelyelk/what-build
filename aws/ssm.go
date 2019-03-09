@@ -39,12 +39,15 @@ func (params BuildParameters) StringIndent(indent string) string {
 // OptionalBuildParameters is a map of BuildParameters
 type OptionalBuildParameters map[string]BuildParameters
 
+// DefaultBuildParametersName is a key for default build parameters (always selected first)
+const DefaultBuildParametersName = "default"
+
 // StringIndent constructs a string to output OptionalBuildParameters with and indent for formatting
 func (opts OptionalBuildParameters) StringIndent(indent string) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "%sdefault:\n%s", indent, opts["default"].StringIndent(fmt.Sprintf("%s  - ", indent)))
+	fmt.Fprintf(&b, "%s%s:\n%s", indent, DefaultBuildParametersName, opts[DefaultBuildParametersName].StringIndent(fmt.Sprintf("%s  - ", indent)))
 	for key, value := range opts {
-		if key == "default" {
+		if key == DefaultBuildParametersName {
 			continue
 		}
 		fmt.Fprintf(&b, "\n%s%s:\n%s", indent, key, value.StringIndent(fmt.Sprintf("%s  - ", indent)))

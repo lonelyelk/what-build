@@ -59,9 +59,9 @@ func promptOptional(pc *aws.Project) aws.BuildParameters {
 	if len(pc.OptionalBuildParameters) == 0 {
 		return aws.BuildParameters{}
 	}
-	options := []string{"default"}
+	options := []string{aws.DefaultBuildParametersName}
 	for opt := range pc.OptionalBuildParameters {
-		if opt != "default" {
+		if opt != aws.DefaultBuildParametersName {
 			options = append(options, opt)
 		}
 	}
