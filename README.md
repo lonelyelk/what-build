@@ -17,16 +17,19 @@ go get github.com/lonelyelk/what-build
 ## Usage
 
 ```
+Usage:
+  what-build [flags]
   what-build [command]
 
 Available Commands:
   find        find a build of a project
   help        Help about any command
+  info        list available projects and builds
   run         run a build of a project
   version     version of what-build tool
 
 Flags:
-  -h, --help   help for what-build
+  -h, --help      help for what-build
   -v, --version   output version
 
 Use "what-build [command] --help" for more information about a command.
