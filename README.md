@@ -110,8 +110,8 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
-- [ ] Add options to build parameters to trigger
-- [ ] List available things with info
+- [x] Add options to build parameters to trigger
+- [x] List available things with info
 - [ ] Dependencies lock
 - [x] Implement better login-password github authentication
 - [x] Refactor API clients
