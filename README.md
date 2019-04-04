@@ -117,3 +117,5 @@ The parameter is expected to contain a json string with projects and builds info
 - [ ] Allow to deploy from a branch, not only PR
 - [ ] Permit rerequest/overwrite github token
 - [ ] Permit multiple build runs in one command run
+- [ ] Add slack notifications
+- [ ] Permit interactive searches too, like runs
