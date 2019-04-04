@@ -32,7 +32,7 @@ Flags:
   -h, --help      help for what-build
   -v, --version   output version
 
-Use "what-build [command] --help" for more information about a command.
+Use "what-build [command] --help" or "what-build help [command]" for more information about a command.
 ```
 
 ## GitHub authorization
