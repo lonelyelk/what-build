@@ -114,7 +114,7 @@ The parameter is expected to contain a json string with projects and builds info
 ## TODO
 
 - [ ] Dependencies lock
-- [ ] Allow to deploy from a branch, not only PR
+- [x] Allow to deploy from a branch, not only PR
 - [ ] Permit rerequest/overwrite github token
 - [ ] Permit multiple build runs in one command run
 - [ ] Add slack notifications
