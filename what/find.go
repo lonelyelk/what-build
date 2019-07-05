@@ -21,7 +21,7 @@ func timeString(str string) string {
 }
 
 // PrintBuild prints Circle CI build in beautiful colors
-func PrintBuild(buildName string, ciBuild *circleci.CIBuildResponse, codeBuild *codebuild.Build) {
+func PrintBuild(buildName string, ciBuild *circleci.CIBuildResponse, codeBuild *codebuild.Build, codeBuildExpected bool) {
 	sprintBuild := color.New(color.FgCyan, color.Bold).SprintFunc()
 	ifColor := color.FgYellow
 	if ciBuild.Status == "success" {
@@ -46,6 +46,11 @@ func PrintBuild(buildName string, ciBuild *circleci.CIBuildResponse, codeBuild *
 	fmt.Printf("    - Branch: %s\n", color.New(ifColor).Sprint(ciBuild.Branch))
 	fmt.Printf("    - Commit: %s\n", color.New(color.FgMagenta).Sprint(ciBuild.Subject))
 	fmt.Printf("    - Revision: %s\n", color.New(color.FgMagenta).Sprint(ciBuild.VcsRevision))
+
+	if !codeBuildExpected {
+		fmt.Println()
+		return
+	}
 
 	if codeBuild == nil {
 		fmt.Printf("  CodeBuild not found\n\n")
@@ -75,8 +80,13 @@ func Find(projects []string, builds []string) {
 				fmt.Println(err)
 				break
 			}
-			codeBuild := aws.FindCodeBuild(&projCfg, &buildCfg, ciBuild.VcsRevision)
-			PrintBuild(buildCfg.Name, ciBuild, codeBuild)
+
+			codeBuild, err := aws.FindCodeBuild(&projCfg, &buildCfg, ciBuild.VcsRevision)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			PrintBuild(buildCfg.Name, ciBuild, codeBuild, projCfg.CodeBuildName != "")
 		}
 	}
 }
