@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/codebuild"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/spf13/viper"
@@ -58,6 +59,7 @@ func (opts OptionalBuildParameters) StringIndent(indent string) string {
 // Project contains info to fetch builds from CircleCI
 type Project struct {
 	Name                    string                  `json:"name"`
+	CodeBuildName           string                  `json:"codebuild_name"`
 	CircleCIURL             string                  `json:"circleci_url"`
 	CircleCIToken           string                  `json:"circleci_token"`
 	CircleCITokenSSMName    string                  `json:"circleci_token_ssm_name"`
@@ -67,9 +69,10 @@ type Project struct {
 
 // Build contains search conditions and identification
 type Build struct {
-	Name                  string          `json:"name"`
-	SearchBuildParameters BuildParameters `json:"search_build_parameters"`
-	RunBuildParameters    BuildParameters `json:"run_build_parameters"`
+	Name                      string          `json:"name"`
+	SearchBuildParameters     BuildParameters `json:"search_build_parameters"`
+	SearchCodeBuildParameters BuildParameters `json:"search_code_build_parameters"`
+	RunBuildParameters        BuildParameters `json:"run_build_parameters"`
 }
 
 // Config contains projects and builds along with settings for the crawler
@@ -155,12 +158,33 @@ func fetchConfig() *Config {
 }
 
 // SatisfiedBy checks if provided map includes all the same values under the same keys as the source
-func (bp BuildParameters) SatisfiedBy(other BuildParameters) bool {
+func (params BuildParameters) SatisfiedBy(other BuildParameters) bool {
 	if other == nil {
 		return false
 	}
-	for key, value := range bp {
+	for key, value := range params {
 		if other[key] != value {
+			return false
+		}
+	}
+	return true
+}
+
+// SatisfiedByCodeBuildEnv checks if provided env variables include all the same values
+// under the same keys as the source build parameters
+func (params BuildParameters) SatisfiedByCodeBuildEnv(envVars []*codebuild.EnvironmentVariable) bool {
+	if len(envVars) == 0 {
+		return false
+	}
+	for key, value := range params {
+		found := false
+		for _, envVar := range envVars {
+			if *envVar.Name == key && *envVar.Value == value {
+				found = true
+				break
+			}
+		}
+		if !found {
 			return false
 		}
 	}
