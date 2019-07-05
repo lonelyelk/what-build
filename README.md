@@ -126,3 +126,4 @@ The parameter is expected to contain a json string with projects and builds info
 - [ ] Permit multiple build runs in one command run
 - [ ] Add slack notifications
 - [ ] Permit interactive searches too, like runs
+- [ ] Make live updates with polling
