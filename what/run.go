@@ -95,5 +95,5 @@ func Run(project string, build string) {
 		fmt.Println(err)
 		return
 	}
-	PrintBuild(buildCfg.Name, ciBuild)
+	PrintBuild(buildCfg.Name, ciBuild, nil)
 }
