@@ -59,7 +59,7 @@ func (opts OptionalBuildParameters) StringIndent(indent string) string {
 // Project contains info to fetch builds from CircleCI
 type Project struct {
 	Name                    string                  `json:"name"`
-	CodeBuildName           string                  `json:"codebuild_name"`
+	CodeBuildName           string                  `json:"code_build_name"`
 	CircleCIURL             string                  `json:"circleci_url"`
 	CircleCIToken           string                  `json:"circleci_token"`
 	CircleCITokenSSMName    string                  `json:"circleci_token_ssm_name"`

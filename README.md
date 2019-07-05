@@ -57,6 +57,7 @@ The parameter is expected to contain a json string with projects and builds info
     "projects": [
         {
             "name": "proj1",
+            "code_build_name": "proj1-deploy",
             "circleci_url": "https://circleci.com/api/v1.1/project/...",
             "circleci_token": "token_for_project",
             "circleci_token_ssm_name": "/nameof/ssm/token_for_project/parameter",
@@ -90,6 +91,9 @@ The parameter is expected to contain a json string with projects and builds info
                 "SOME_ENV": "superprod",
                 "SOME_VAR": "true"
             },
+            "search_code_build_parameters": {
+                "SOME_ENV": "superprod",
+            },
             "run_build_parameters": {
                 "SOME_ENV": "superprod",
                 "SOME_VAR": "true",
@@ -101,6 +105,9 @@ The parameter is expected to contain a json string with projects and builds info
             "search_build_parameters": {
                 "SOME_ENV": "QA999",
                 "SOME_OTHER_VAR": "false"
+            },
+            "search_code_build_parameters": {
+                "SOME_ENV": "QA999",
             },
             "run_build_parameters": {
                 "SOME_ENV": "QA999",
