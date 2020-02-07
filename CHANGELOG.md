@@ -1,3 +1,7 @@
+## 0.5.1
+
+* Resolve deprecation of access token in query by GitHub
+
 ## 0.5.0
 
 * Implement AWS CodeBuild search of related builds
