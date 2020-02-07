@@ -120,8 +120,8 @@ The parameter is expected to contain a json string with projects and builds info
 
 ## TODO
 
+- [ ] Move GitHub authentication to [OAuth with localhost redirects](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#localhost-redirect-urls)
 - [ ] Dependencies lock
-- [x] Allow to deploy from a branch, not only PR
 - [ ] Permit rerequest/overwrite github token
 - [ ] Permit multiple build runs in one command run
 - [ ] Add slack notifications

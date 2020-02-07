@@ -42,9 +42,7 @@ func ListRequest(url string) (req *http.Request, err error) {
 		return nil, err
 	}
 
-	q := req.URL.Query()
-	q.Add("access_token", viper.GetString(githubTokenConfigName))
-	req.URL.RawQuery = q.Encode()
+	req.Header.Add("Authorization", "token "+viper.GetString(githubTokenConfigName))
 	return
 }
 

@@ -3,7 +3,7 @@ package what
 import "fmt"
 
 // Version string assigned by LDFLAGS on build time
-var Version = "0.5.0"
+var Version = "0.5.1"
 
 // PrintVersion outputs tool version
 func PrintVersion() {
